@@ -1,6 +1,6 @@
 * {
-  margin:0;
-  padding:0;
+  margin: 0;
+  padding: 0;
 }
 
 /* Button styles */
@@ -134,10 +134,18 @@
   color: #d32f2f;
 }
 
-.input-width-small { width: 200px; }
-.input-width-medium { width: 300px; }
-.input-width-large { width: 400px; }
-.input-width-full { width: 100%; }
+.input-width-small {
+  width: 200px;
+}
+.input-width-medium {
+  width: 300px;
+}
+.input-width-large {
+  width: 400px;
+}
+.input-width-full {
+  width: 100%;
+}
 
 /* Card styles */
 .card {
@@ -150,9 +158,10 @@
 
 .card-default {
   border: 1px solid rgba(0, 0, 0, 0.12);
-  box-shadow: 0px 2px 1px -1px rgba(0,0,0,0.2),
-              0px 1px 1px 0px rgba(0,0,0,0.14),
-              0px 1px 3px 0px rgba(0,0,0,0.12);
+  box-shadow:
+    0px 2px 1px -1px rgba(0, 0, 0, 0.2),
+    0px 1px 1px 0px rgba(0, 0, 0, 0.14),
+    0px 1px 3px 0px rgba(0, 0, 0, 0.12);
 }
 
 .card-bordered {
@@ -162,9 +171,10 @@
 
 .card-elevated {
   border: 1px solid rgba(0, 0, 0, 0.08);
-  box-shadow: 0px 2px 4px -1px rgba(0,0,0,0.12),
-              0px 1px 2px 0px rgba(0,0,0,0.08),
-              0px 1px 4px 0px rgba(0,0,0,0.08);
+  box-shadow:
+    0px 2px 4px -1px rgba(0, 0, 0, 0.12),
+    0px 1px 2px 0px rgba(0, 0, 0, 0.08),
+    0px 1px 4px 0px rgba(0, 0, 0, 0.08);
 }
 
 .card-flat {
@@ -218,12 +228,30 @@
   border-radius: 10px;
 }
 
-.badge-primary { background-color: #1976d2; color: #fff; }
-.badge-secondary { background-color: #757575; color: #fff; }
-.badge-success { background-color: #388e3c; color: #fff; }
-.badge-danger { background-color: #d32f2f; color: #fff; }
-.badge-warning { background-color: #f57c00; color: #fff; }
-.badge-info { background-color: #0288d1; color: #fff; }
+.badge-primary {
+  background-color: #1976d2;
+  color: #fff;
+}
+.badge-secondary {
+  background-color: #757575;
+  color: #fff;
+}
+.badge-success {
+  background-color: #388e3c;
+  color: #fff;
+}
+.badge-danger {
+  background-color: #d32f2f;
+  color: #fff;
+}
+.badge-warning {
+  background-color: #f57c00;
+  color: #fff;
+}
+.badge-info {
+  background-color: #0288d1;
+  color: #fff;
+}
 
 .badge-small {
   padding: 0px 4px;
@@ -426,7 +454,7 @@
   border-radius: 4px;
   background-color: #fff;
   box-sizing: border-box;
-  transition: border-color 200ms cubic-bezier(0.0, 0, 0.2, 1) 0ms;
+  transition: border-color 200ms cubic-bezier(0, 0, 0.2, 1) 0ms;
   outline: none;
   resize: vertical;
 }
@@ -447,8 +475,12 @@
 
 /* Loading spinner */
 @keyframes spin {
-  from { transform: rotate(0deg); }
-  to { transform: rotate(360deg); }
+  from {
+    transform: rotate(0deg);
+  }
+  to {
+    transform: rotate(360deg);
+  }
 }
 
 .spinner {
@@ -528,9 +560,10 @@
 .modal-content {
   background-color: #fff;
   border-radius: 4px;
-  box-shadow: 0px 11px 15px -7px rgba(0,0,0,0.2),
-              0px 24px 38px 3px rgba(0,0,0,0.14),
-              0px 9px 46px 8px rgba(0,0,0,0.12);
+  box-shadow:
+    0px 11px 15px -7px rgba(0, 0, 0, 0.2),
+    0px 24px 38px 3px rgba(0, 0, 0, 0.14),
+    0px 9px 46px 8px rgba(0, 0, 0, 0.12);
   max-height: 90vh;
   display: flex;
   flex-direction: column;
