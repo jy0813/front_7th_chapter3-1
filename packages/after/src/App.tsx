@@ -7,7 +7,7 @@ export const App: React.FC = () => {
   return (
     <div style={{ minHeight: '100vh', backgroundColor: '#f7fafc' }}>
       <Header />
-      <main>
+      <main className="w-full px-8 py-4">
         <ManagementPage />
       </main>
     </div>
