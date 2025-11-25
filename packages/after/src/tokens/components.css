@@ -1,464 +1,415 @@
 /* ============================================
    COMPONENT TOKENS
    컴포넌트별 스타일 토큰 - Semantic 참조
+   Tailwind 유틸리티 클래스로 사용 가능
 
-   목적:
-   1. 레거시 혼재된 스타일링 방식 개선
-   2. 컴포넌트 간 일관성 확보
-   3. 테마 확장 용이성
+   네이밍 규칙:
+   - {component}-{size}: 사이즈 변형 (btn-sm, btn-md, btn-lg)
+   - {component}: 단일 값 (alert, card, input)
+   - {component}-{part}: 부분별 구분 (card-header, card-body)
+   - {component}-{variant}-{prop}: 색상 변형 (btn-primary-bg)
+
+   사용법:
+   --spacing-btn-md 정의 → py-btn-md, px-btn-md, p-btn-md 모두 사용 가능
+   세로/가로 값이 다르면 다른 사이즈 조합: py-btn-sm px-btn-lg
 
    계층: Primitive → Semantic → Component
    ============================================ */
 
-@import './semantic.css';
+@import '@/tokens/semantic.css';
 
-:root {
+@theme inline {
   /* ========================================
      BUTTON
-     레거시: btn, btn-${variant}, btn-${size}
-     문제: variant 명명, inline style 없음
      ======================================== */
 
-  /* Base */
-  --button-font-family: var(--font-family-base);
-  --button-font-weight: var(--font-normal);
-  --button-line-height: var(--leading-normal);
-  --button-border-radius: var(--rounded-base);
-  --button-border-width: 1px;
-  --button-cursor: pointer;
-  --button-cursor-disabled: not-allowed;
-  --button-opacity-disabled: var(--opacity-disabled);
-  --button-transition: background-color var(--duration-fast) ease-in-out;
+  /* Spacing by size */
+  --spacing-btn-sm: var(--space-sm);
+  --spacing-btn-md: var(--space-md);
+  --spacing-btn-lg: var(--space-lg);
+  --spacing-btn-xl: var(--space-xl);
+  --spacing-btn-2xl: var(--space-2xl);
+  --spacing-btn-3xl: var(--space-3xl);
 
-  /* Size: sm */
-  --button-padding-y-sm: var(--space-sm);
-  --button-padding-x-sm: var(--space-lg);
-  --button-font-size-sm: var(--text-sm);
+  /* Font Size */
+  --text-btn-sm: var(--text-sm);
+  --text-btn-md: var(--text-base);
+  --text-btn-lg: var(--text-md);
 
-  /* Size: md (default) */
-  --button-padding-y-md: var(--space-md);
-  --button-padding-x-md: var(--space-2xl);
-  --button-font-size-md: var(--text-base);
+  /* Font Weight & Line Height */
+  --font-btn: var(--font-normal);
+  --leading-btn: var(--leading-relaxed);
 
-  /* Size: lg */
-  --button-padding-y-lg: var(--space-lg);
-  --button-padding-x-lg: var(--space-3xl);
-  --button-font-size-lg: var(--text-md);
+  /* State */
+  --opacity-btn-disabled: var(--opacity-disabled);
+
+  /* Radius */
+  --radius-btn: var(--rounded-base);
 
   /* Variant: primary */
-  --button-primary-bg: var(--color-primary);
-  --button-primary-bg-hover: var(--color-primary-hover);
-  --button-primary-color: var(--color-primary-foreground);
-  --button-primary-border: var(--color-primary-hover);
+  --color-btn-primary-bg: var(--color-primary);
+  --color-btn-primary-bg-hover: var(--color-primary-hover);
+  --color-btn-primary-text: var(--color-primary-foreground);
+  --color-btn-primary-border: var(--color-primary-hover);
 
   /* Variant: secondary */
-  --button-secondary-bg: var(--color-secondary);
-  --button-secondary-bg-hover: var(--color-secondary-hover);
-  --button-secondary-color: var(--color-secondary-foreground);
-  --button-secondary-border: var(--color-secondary-border);
+  --color-btn-secondary-bg: var(--color-secondary);
+  --color-btn-secondary-bg-hover: var(--color-secondary-hover);
+  --color-btn-secondary-text: var(--color-secondary-foreground);
+  --color-btn-secondary-border: var(--color-secondary-border);
 
-  /* Variant: destructive (레거시: danger) */
-  --button-destructive-bg: var(--color-destructive);
-  --button-destructive-bg-hover: var(--color-destructive-hover);
-  --button-destructive-color: var(--color-destructive-foreground);
-  --button-destructive-border: var(--color-destructive-hover);
+  /* Variant: destructive */
+  --color-btn-destructive-bg: var(--color-destructive);
+  --color-btn-destructive-bg-hover: var(--color-destructive-hover);
+  --color-btn-destructive-text: var(--color-destructive-foreground);
+  --color-btn-destructive-border: var(--color-destructive-hover);
 
   /* Variant: success */
-  --button-success-bg: var(--color-success);
-  --button-success-bg-hover: var(--color-success-hover);
-  --button-success-color: var(--color-success-foreground);
-  --button-success-border: var(--color-success-hover);
+  --color-btn-success-bg: var(--color-success);
+  --color-btn-success-bg-hover: var(--color-success-hover);
+  --color-btn-success-text: var(--color-success-foreground);
+  --color-btn-success-border: var(--color-success-hover);
 
   /* ========================================
      BADGE
-     레거시: badge, badge-${type}, badge-${size}
-     문제: type vs variant, size 명명 불일치
-     개선: variant 통일, sm/md/lg 통일
      ======================================== */
 
-  /* Base */
-  --badge-font-family: var(--font-family-base);
-  --badge-font-weight: var(--font-bold);
-  --badge-line-height: var(--leading-none);
-  --badge-border-radius: var(--rounded-base);
-  --badge-border-radius-pill: var(--rounded-lg);
+  /* Spacing by size */
+  --spacing-badge-sm: var(--space-sm);
+  --spacing-badge-md: var(--space-md);
+  --spacing-badge-lg: var(--space-lg);
+  --spacing-badge-xl: var(--space-xl);
+  --spacing-badge-2xl: var(--space-2xl);
+  --spacing-badge-3xl: var(--space-3xl);
 
-  /* Size: sm (레거시: small) */
-  --badge-padding-y-sm: var(--space-none);
-  --badge-padding-x-sm: var(--space-sm);
-  --badge-font-size-sm: var(--text-xs);
-  --badge-height-sm: var(--size-icon-sm);
+  /* Height by size */
+  --spacing-badge-h-sm: var(--size-icon-sm);
+  --spacing-badge-h-md: var(--space-2xl);
+  --spacing-badge-h-lg: var(--space-3xl);
+  --spacing-badge-h-xl: var(--space-4xl);
+  --spacing-badge-h-2xl: var(--space-4xl);
+  --spacing-badge-h-3xl: var(--space-4xl);
 
-  /* Size: md (레거시: medium) */
-  --badge-padding-y-md: var(--space-none);
-  --badge-padding-x-md: var(--space-md);
-  --badge-font-size-md: var(--text-sm);
-  --badge-height-md: var(--space-2xl);
+  /* Font Size */
+  --text-badge-sm: var(--text-xs);
+  --text-badge-md: var(--text-sm);
+  --text-badge-lg: var(--text-sm);
 
-  /* Size: lg (레거시: large) */
-  --badge-padding-y-lg: var(--space-none);
-  --badge-padding-x-lg: var(--space-md);
-  --badge-font-size-lg: var(--text-sm);
-  --badge-height-lg: var(--space-3xl);
+  /* Font Weight & Line Height */
+  --font-badge: var(--font-bold);
+  --leading-badge: var(--leading-none);
 
-  /* Variant: primary */
-  --badge-primary-bg: var(--color-primary);
-  --badge-primary-color: var(--color-primary-foreground);
+  /* Radius */
+  --radius-badge: var(--rounded-base);
+  --radius-badge-pill: var(--rounded-lg);
 
-  /* Variant: secondary */
-  --badge-secondary-bg: var(--color-gray-500);
-  --badge-secondary-color: var(--color-white);
+  /* Variants */
+  --color-badge-primary-bg: var(--color-primary);
+  --color-badge-primary-text: var(--color-primary-foreground);
 
-  /* Variant: success */
-  --badge-success-bg: var(--color-success);
-  --badge-success-color: var(--color-success-foreground);
+  --color-badge-secondary-bg: var(--color-gray-500);
+  --color-badge-secondary-text: var(--color-white);
 
-  /* Variant: destructive (레거시: danger) */
-  --badge-destructive-bg: var(--color-destructive);
-  --badge-destructive-color: var(--color-destructive-foreground);
+  --color-badge-success-bg: var(--color-success);
+  --color-badge-success-text: var(--color-success-foreground);
 
-  /* Variant: warning */
-  --badge-warning-bg: var(--color-warning);
-  --badge-warning-color: var(--color-warning-foreground);
+  --color-badge-destructive-bg: var(--color-destructive);
+  --color-badge-destructive-text: var(--color-destructive-foreground);
 
-  /* Variant: info */
-  --badge-info-bg: var(--color-info);
-  --badge-info-color: var(--color-info-foreground);
+  --color-badge-warning-bg: var(--color-warning);
+  --color-badge-warning-text: var(--color-warning-foreground);
+
+  --color-badge-info-bg: var(--color-info);
+  --color-badge-info-text: var(--color-info-foreground);
 
   /* ========================================
-     INPUT (FormInput, FormSelect, FormTextarea)
-     레거시: form-input, form-select, input-width-${width}
-     문제: inline style 혼용, width 명명 불일치
+     INPUT
      ======================================== */
 
-  /* Base */
-  --input-font-family: var(--font-family-base);
-  --input-font-size: var(--text-base);
-  --input-font-weight: var(--font-normal);
-  --input-line-height: var(--leading-normal);
-  --input-padding-y: var(--space-md);
-  --input-padding-x: var(--space-md);
-  --input-border-radius: var(--rounded-base);
-  --input-border-width: 1px;
-  --input-transition: border-color var(--duration-normal) ease;
+  /* Spacing by size */
+  --spacing-input-sm: var(--space-sm);
+  --spacing-input-md: var(--space-md);
+  --spacing-input-lg: var(--space-lg);
+  --spacing-input-xl: var(--space-xl);
+  --spacing-input-2xl: var(--space-2xl);
+  --spacing-input-3xl: var(--space-3xl);
+
+  /* Width by size */
+  --spacing-input-w-sm: var(--size-input-sm);
+  --spacing-input-w-md: var(--size-input-md);
+  --spacing-input-w-lg: var(--size-input-lg);
+
+  /* Font & Radius */
+  --text-input: var(--text-base);
+  --radius-input: var(--rounded-base);
 
   /* Colors */
-  --input-bg: var(--color-background);
-  --input-bg-disabled: var(--color-background-disabled);
-  --input-color: var(--color-black);
-  --input-border: var(--color-border-input);
-  --input-border-focus: var(--color-border-focus);
-  --input-border-error: var(--color-border-error);
-
-  /* Width (레거시: small/medium/large/full → sm/md/lg/full) */
-  --input-width-sm: var(--size-input-sm);
-  --input-width-md: var(--size-input-md);
-  --input-width-lg: var(--size-input-lg);
-  --input-width-full: 100%;
+  --color-input-bg: var(--color-background);
+  --color-input-bg-disabled: var(--color-background-disabled);
+  --color-input-text: var(--color-black);
+  --color-input-border: var(--color-border-input);
+  --color-input-border-focus: var(--color-border-focus);
+  --color-input-border-error: var(--color-border-error);
 
   /* ========================================
      LABEL
-     레거시: form-label
-     문제: required 색상 inline style
      ======================================== */
 
-  --label-font-family: var(--font-family-base);
-  --label-font-size: var(--text-sm);
-  --label-font-weight: var(--font-bold);
-  --label-color: var(--color-gray-800);
-  --label-margin-bottom: var(--space-sm);
-  --label-required-color: var(--color-destructive);
+  --text-label: var(--text-sm);
+  --color-label-text: var(--color-gray-800);
+  --color-label-required: var(--color-destructive);
+  --spacing-label-sm: var(--space-sm);
+  --spacing-label-md: var(--space-md);
+  --spacing-label-lg: var(--space-lg);
+  --spacing-label-xl: var(--space-xl);
+  --spacing-label-2xl: var(--space-2xl);
+  --spacing-label-3xl: var(--space-3xl);
 
   /* ========================================
      HELPER TEXT
-     레거시: form-helper-text
      ======================================== */
 
-  --helper-font-family: var(--font-family-base);
-  --helper-font-size: var(--text-sm);
-  --helper-color: var(--color-foreground-disabled);
-  --helper-color-error: var(--color-destructive);
-  --helper-margin-top: var(--space-sm);
+  --text-helper: var(--text-sm);
+  --color-helper-text: var(--color-foreground-disabled);
+  --color-helper-error: var(--color-destructive);
+  --spacing-helper-sm: var(--space-sm);
+  --spacing-helper-md: var(--space-md);
+  --spacing-helper-lg: var(--space-lg);
+  --spacing-helper-xl: var(--space-xl);
+  --spacing-helper-2xl: var(--space-2xl);
+  --spacing-helper-3xl: var(--space-3xl);
 
   /* ========================================
      CARD
-     레거시: card, card-${variant}
      ======================================== */
 
-  /* Base */
-  --card-font-family: var(--font-family-body);
-  --card-border-radius: var(--rounded-md);
-  --card-bg: var(--color-background);
-  --card-margin-bottom: var(--space-xl);
+  /* Spacing by size */
+  --spacing-card-sm: var(--space-sm);
+  --spacing-card-md: var(--space-md);
+  --spacing-card-lg: var(--space-lg);
+  --spacing-card-xl: var(--space-xl);
+  --spacing-card-2xl: var(--space-2xl);
+  --spacing-card-3xl: var(--space-3xl);
 
-  /* Variant styles */
-  --card-border: var(--color-border);
-  --card-border-subtle: var(--color-border-subtle);
-  --card-shadow-default: var(--shadow-sm);
-  --card-shadow-elevated: var(--shadow-md);
-  --card-bg-flat: var(--color-background-subtle);
+  /* Base */
+  --radius-card: var(--rounded-md);
+  --color-card-bg: var(--color-background);
+
+  /* Border & Shadow */
+  --color-card-border: var(--color-border);
+  --color-card-border-subtle: var(--color-border-subtle);
+  --shadow-card: var(--shadow-sm);
+  --shadow-card-elevated: var(--shadow-md);
+  --color-card-bg-flat: var(--color-background-subtle);
 
   /* Header */
-  --card-header-padding: var(--space-2xl);
-  --card-header-bg: var(--color-background-subtle);
-  --card-header-border: var(--color-border-subtle);
+  --color-card-header-bg: var(--color-background-subtle);
+  --color-card-header-border: var(--color-border-subtle);
 
   /* Title */
-  --card-title-font-size: var(--text-xl);
-  --card-title-font-weight: var(--font-medium);
-  --card-title-line-height: var(--leading-relaxed);
-  --card-title-color: var(--color-foreground);
+  --text-card-title: var(--text-xl);
+  --font-card-title: var(--font-medium);
+  --leading-card-title: var(--leading-loose);
+  --color-card-title: var(--color-foreground);
 
   /* Subtitle */
-  --card-subtitle-font-size: var(--text-base);
-  --card-subtitle-font-weight: var(--font-normal);
-  --card-subtitle-line-height: var(--leading-snug);
-  --card-subtitle-color: var(--color-foreground-muted);
-  --card-subtitle-margin-top: var(--space-sm);
-
-  /* Body */
-  --card-body-padding: var(--space-2xl);
+  --text-card-subtitle: var(--text-base);
+  --leading-card-subtitle: var(--leading-normal);
+  --color-card-subtitle: var(--color-foreground-muted);
 
   /* ========================================
      ALERT
-     레거시: alert, alert-${variant}
-     문제: error vs destructive 불일치
-     개선: error → destructive 통일
      ======================================== */
 
-  /* Base */
-  --alert-font-family: var(--font-family-base);
-  --alert-padding-y: var(--space-md);
-  --alert-padding-x: var(--space-lg);
-  --alert-margin-bottom: var(--space-xl);
-  --alert-border-radius: var(--rounded-base);
-  --alert-border-width: 1px;
-  --alert-gap: var(--space-md);
+  /* Spacing by size */
+  --spacing-alert-sm: var(--space-sm);
+  --spacing-alert-md: var(--space-md);
+  --spacing-alert-lg: var(--space-lg);
+  --spacing-alert-xl: var(--space-xl);
+  --spacing-alert-2xl: var(--space-2xl);
+  --spacing-alert-3xl: var(--space-3xl);
+  --radius-alert: var(--rounded-base);
 
   /* Icon */
-  --alert-icon-size: var(--text-2xl);
+  --text-alert-icon: var(--text-2xl);
 
   /* Title */
-  --alert-title-font-size: var(--text-md);
-  --alert-title-font-weight: var(--font-bold);
-  --alert-title-margin-bottom: var(--space-sm);
+  --text-alert-title: var(--text-md);
+  --font-alert-title: var(--font-bold);
 
   /* Body */
-  --alert-body-font-size: var(--text-base);
-  --alert-body-line-height: var(--leading-normal);
+  --text-alert-body: var(--text-base);
+  --leading-alert-body: var(--leading-relaxed);
 
   /* Close Button */
-  --alert-close-size: var(--text-2xl);
-  --alert-close-padding: var(--space-sm);
+  --text-alert-close: var(--text-2xl);
 
   /* Variant: info */
-  --alert-info-bg: var(--color-feedback-info-bg);
-  --alert-info-border: var(--color-feedback-info-border);
-  --alert-info-color: var(--color-feedback-info-text);
+  --color-alert-info-bg: var(--color-feedback-info-bg);
+  --color-alert-info-border: var(--color-feedback-info-border);
+  --color-alert-info-text: var(--color-feedback-info-text);
 
   /* Variant: success */
-  --alert-success-bg: var(--color-feedback-success-bg);
-  --alert-success-border: var(--color-feedback-success-border);
-  --alert-success-color: var(--color-feedback-success-text);
+  --color-alert-success-bg: var(--color-feedback-success-bg);
+  --color-alert-success-border: var(--color-feedback-success-border);
+  --color-alert-success-text: var(--color-feedback-success-text);
 
   /* Variant: warning */
-  --alert-warning-bg: var(--color-feedback-warning-bg);
-  --alert-warning-border: var(--color-feedback-warning-border);
-  --alert-warning-color: var(--color-feedback-warning-text);
+  --color-alert-warning-bg: var(--color-feedback-warning-bg);
+  --color-alert-warning-border: var(--color-feedback-warning-border);
+  --color-alert-warning-text: var(--color-feedback-warning-text);
 
-  /* Variant: destructive (레거시: error) */
-  --alert-destructive-bg: var(--color-feedback-error-bg);
-  --alert-destructive-border: var(--color-feedback-error-border);
-  --alert-destructive-color: var(--color-feedback-error-text);
+  /* Variant: destructive */
+  --color-alert-destructive-bg: var(--color-feedback-error-bg);
+  --color-alert-destructive-border: var(--color-feedback-error-border);
+  --color-alert-destructive-text: var(--color-feedback-error-text);
 
   /* Variant: default */
-  --alert-default-bg: var(--color-feedback-default-bg);
-  --alert-default-border: var(--color-feedback-default-border);
-  --alert-default-color: var(--color-feedback-default-text);
+  --color-alert-default-bg: var(--color-feedback-default-bg);
+  --color-alert-default-border: var(--color-feedback-default-border);
+  --color-alert-default-text: var(--color-feedback-default-text);
 
   /* ========================================
      MODAL
-     레거시: modal-overlay, modal-content, modal-${size}
-     문제: size 명명 불일치 (small/medium/large)
-     개선: sm/md/lg 통일
      ======================================== */
 
+  /* Spacing by size */
+  --spacing-modal-sm: var(--space-sm);
+  --spacing-modal-md: var(--space-md);
+  --spacing-modal-lg: var(--space-lg);
+  --spacing-modal-xl: var(--space-xl);
+  --spacing-modal-2xl: var(--space-2xl);
+  --spacing-modal-3xl: var(--space-3xl);
+
+  /* Width by size */
+  --spacing-modal-w-sm: var(--size-modal-sm);
+  --spacing-modal-w-md: var(--size-modal-md);
+  --spacing-modal-w-lg: var(--size-modal-lg);
+
   /* Overlay */
-  --modal-overlay-bg: var(--color-overlay);
-  --modal-overlay-z-index: var(--z-modal);
-  --modal-overlay-padding: var(--space-xl);
+  --color-modal-overlay: var(--color-overlay);
 
   /* Content */
-  --modal-font-family: var(--font-family-body);
-  --modal-bg: var(--color-background);
-  --modal-border-radius: var(--rounded-md);
-  --modal-shadow: var(--shadow-lg);
-  --modal-max-height: 90vh;
-
-  /* Size: sm (레거시: small) */
-  --modal-width-sm: var(--size-modal-sm);
-
-  /* Size: md (레거시: medium) */
-  --modal-width-md: var(--size-modal-md);
-
-  /* Size: lg (레거시: large) */
-  --modal-width-lg: var(--size-modal-lg);
+  --color-modal-bg: var(--color-background);
+  --radius-modal: var(--rounded-md);
+  --shadow-modal: var(--shadow-lg);
 
   /* Header */
-  --modal-header-padding-y: var(--space-xl);
-  --modal-header-padding-x: var(--space-3xl);
-  --modal-header-border: var(--color-border);
+  --color-modal-header-border: var(--color-border);
 
   /* Title */
-  --modal-title-font-size: var(--text-xl);
-  --modal-title-font-weight: var(--font-medium);
-  --modal-title-color: var(--color-foreground);
+  --text-modal-title: var(--text-xl);
+  --font-modal-title: var(--font-medium);
+  --color-modal-title: var(--color-foreground);
 
   /* Close Button */
-  --modal-close-size: var(--space-4xl);
-  --modal-close-font-size: var(--text-3xl);
-  --modal-close-color: var(--color-foreground-subtle);
-  --modal-close-bg-hover: var(--color-hover-overlay);
-  --modal-close-border-radius: var(--rounded-full);
-  --modal-close-transition: background-color var(--duration-fast) ease;
-
-  /* Body */
-  --modal-body-padding: var(--space-3xl);
+  --text-modal-close: var(--text-3xl);
+  --size-modal-close: var(--size-icon-md);
+  --color-modal-close: var(--color-foreground-subtle);
+  --color-modal-close-hover: var(--color-hover-overlay);
+  --radius-modal-close: var(--rounded-full);
 
   /* Footer */
-  --modal-footer-padding-y: var(--space-xl);
-  --modal-footer-padding-x: var(--space-3xl);
-  --modal-footer-border: var(--color-border);
-  --modal-footer-gap: var(--space-md);
+  --color-modal-footer-border: var(--color-border);
 
   /* ========================================
      TABLE
-     레거시: table, table-striped, table-bordered, table-hover
-     문제: inline style 과다 사용
      ======================================== */
 
+  /* Spacing by size */
+  --spacing-table-sm: var(--space-sm);
+  --spacing-table-md: var(--space-md);
+  --spacing-table-lg: var(--space-lg);
+  --spacing-table-xl: var(--space-xl);
+  --spacing-table-2xl: var(--space-2xl);
+  --spacing-table-3xl: var(--space-3xl);
+
   /* Base */
-  --table-font-family: var(--font-family-body);
-  --table-font-size: var(--text-base);
-  --table-bg: var(--color-background);
+  --text-table: var(--text-base);
+  --color-table-bg: var(--color-background);
 
   /* Header */
-  --table-header-bg: var(--color-background-subtle);
-  --table-header-padding: var(--space-xl);
-  --table-header-font-size: var(--text-sm);
-  --table-header-font-weight: var(--font-medium);
-  --table-header-color: var(--color-foreground-muted);
-  --table-header-border: var(--color-border);
-  --table-header-border-width: 2px;
-  --table-header-letter-spacing: 0.03em;
+  --color-table-header-bg: var(--color-background-subtle);
+  --text-table-header: var(--text-sm);
+  --font-table-header: var(--font-medium);
+  --tracking-table-header: var(--tracking-wide);
+  --color-table-header-text: var(--color-foreground-muted);
+  --color-table-header-border: var(--color-border);
 
   /* Cell */
-  --table-cell-padding: var(--space-xl);
-  --table-cell-color: var(--color-foreground);
-  --table-cell-border: var(--color-border-subtle);
+  --color-table-cell-text: var(--color-foreground);
+  --color-table-cell-border: var(--color-border-subtle);
 
-  /* Striped */
-  --table-striped-bg: var(--color-background-subtle);
-
-  /* Hover */
-  --table-hover-bg: var(--color-hover-overlay);
-
-  /* Bordered */
-  --table-bordered-border: var(--color-border);
+  /* Striped & Hover */
+  --color-table-striped-bg: var(--color-background-subtle);
+  --color-table-hover-bg: var(--color-hover-overlay);
+  --color-table-bordered-border: var(--color-border);
 
   /* ========================================
      CHECKBOX
-     레거시: checkbox-wrapper, checkbox-custom
      ======================================== */
 
+  /* Spacing by size */
+  --spacing-checkbox-sm: var(--space-sm);
+  --spacing-checkbox-md: var(--space-md);
+  --spacing-checkbox-lg: var(--space-lg);
+  --spacing-checkbox-xl: var(--space-xl);
+  --spacing-checkbox-2xl: var(--space-2xl);
+  --spacing-checkbox-3xl: var(--space-3xl);
+
+  /* Box Size */
+  --size-checkbox: var(--size-icon-sm);
+
   /* Base */
-  --checkbox-size: var(--size-icon-sm);
-  --checkbox-border-radius: var(--rounded-sm);
-  --checkbox-border-width: 2px;
-  --checkbox-border-color: var(--color-gray-300);
-  --checkbox-bg: var(--color-background);
-  --checkbox-bg-checked: var(--color-primary);
-  --checkbox-border-checked: var(--color-primary);
-  --checkbox-checkmark-color: var(--color-white);
-  --checkbox-checkmark-size: var(--text-xs);
-  --checkbox-transition: all var(--duration-fast) ease-in-out;
+  --radius-checkbox: var(--rounded-sm);
+  --color-checkbox-border: var(--color-gray-300);
+  --color-checkbox-bg: var(--color-background);
+  --color-checkbox-bg-checked: var(--color-primary);
+  --color-checkbox-border-checked: var(--color-primary);
+  --color-checkbox-checkmark: var(--color-white);
+  --text-checkbox-checkmark: var(--text-xs);
 
   /* Label */
-  --checkbox-label-font-family: var(--font-family-body);
-  --checkbox-label-font-size: var(--text-base);
-  --checkbox-label-color: var(--color-gray-750);
-  --checkbox-label-color-error: var(--color-red-500);
-  --checkbox-label-line-height: var(--leading-tight);
+  --text-checkbox-label: var(--text-base);
+  --leading-checkbox-label: var(--leading-snug);
+  --color-checkbox-label: var(--color-gray-750);
+  --color-checkbox-label-error: var(--color-red-500);
 
   /* Hint */
-  --checkbox-hint-font-size: var(--text-sm);
-  --checkbox-hint-color: var(--color-gray-550);
-  --checkbox-hint-margin-left: var(--space-3xl);
-  --checkbox-hint-margin-top: var(--space-xs);
-
-  /* Disabled */
-  --checkbox-opacity-disabled: var(--opacity-disabled);
+  --text-checkbox-hint: var(--text-sm);
+  --color-checkbox-hint: var(--color-gray-550);
 
   /* ========================================
      TEXTAREA
-     레거시: form-textarea
      ======================================== */
 
-  --textarea-font-family: var(--font-family-body);
-  --textarea-font-size: var(--text-lg);
-  --textarea-font-weight: var(--font-normal);
-  --textarea-line-height: 1.1876em;
-  --textarea-padding-y: 16.5px;
-  --textarea-padding-x: var(--space-14);
-  --textarea-border-radius: var(--rounded-md);
-  --textarea-border-width: 1px;
-  --textarea-border-color: var(--color-black-a23);
-  --textarea-border-focus: var(--color-border-focus);
-  --textarea-border-focus-width: 2px;
-  --textarea-border-error: var(--color-border-error);
-  --textarea-bg: var(--color-background);
-  --textarea-bg-disabled: var(--color-black-a12);
-  --textarea-color: var(--color-foreground);
-  --textarea-min-height: 6em;
-  --textarea-transition: border-color var(--duration-normal)
-    cubic-bezier(0, 0, 0.2, 1);
+  /* Spacing by size */
+  --spacing-textarea-sm: var(--space-sm);
+  --spacing-textarea-md: var(--space-md);
+  --spacing-textarea-lg: var(--space-lg);
+  --spacing-textarea-xl: var(--space-xl);
+  --spacing-textarea-2xl: var(--space-2xl);
+  --spacing-textarea-3xl: var(--space-3xl);
 
-  /* ========================================
-     PAGINATION (Table 내부)
-     레거시: inline style로 하드코딩
-     ======================================== */
-
-  --pagination-gap: var(--space-md);
-  --pagination-margin-top: var(--space-xl);
-  --pagination-button-padding-y: var(--space-sm);
-  --pagination-button-padding-x: var(--space-lg);
-  --pagination-button-border: var(--color-secondary-border);
-  --pagination-button-bg: var(--color-background);
-  --pagination-button-border-radius: var(--rounded-md);
-
-  /* ========================================
-     SEARCH INPUT (Table 내부)
-     레거시: inline style로 하드코딩
-     ======================================== */
-
-  --search-padding-y: var(--space-md);
-  --search-padding-x: var(--space-lg);
-  --search-border: var(--color-secondary-border);
-  --search-border-radius: var(--rounded-md);
-  --search-width: var(--size-input-md);
-  --search-margin-bottom: var(--space-xl);
+  /* Base */
+  --text-textarea: var(--text-lg);
+  --leading-textarea: var(--leading-tight);
+  --radius-textarea: var(--rounded-md);
+  --color-textarea-border: var(--color-black-a23);
+  --color-textarea-border-focus: var(--color-border-focus);
+  --color-textarea-border-error: var(--color-border-error);
+  --color-textarea-bg: var(--color-background);
+  --color-textarea-bg-disabled: var(--color-black-a12);
+  --color-textarea-text: var(--color-foreground);
 
   /* ========================================
      FORM GROUP
-     레거시: form-group
      ======================================== */
 
-  --form-group-margin-bottom: var(--space-xl);
-
-  /* ========================================
-     ACTION GROUP (버튼 그룹)
-     레거시: inline style { display: flex, gap: 8px }
-     ======================================== */
-
-  --action-group-gap: var(--space-md);
+  --spacing-form-group-sm: var(--space-sm);
+  --spacing-form-group-md: var(--space-md);
+  --spacing-form-group-lg: var(--space-lg);
+  --spacing-form-group-xl: var(--space-xl);
+  --spacing-form-group-2xl: var(--space-2xl);
+  --spacing-form-group-3xl: var(--space-3xl);
 }

@@ -1,13 +1,14 @@
 /* ============================================
    SEMANTIC TOKENS
    의미/용도 기반 토큰 - Primitive 참조
+   Tailwind 유틸리티 클래스로 사용 가능
 
    계층: Primitive → Semantic → Component
    ============================================ */
 
-@import './primitive.css';
+@import '@/tokens/primitive.css';
 
-:root {
+@theme inline {
   /* ========================================
      COLORS - Intent Based
      ======================================== */
@@ -126,10 +127,14 @@
 
   /* Line Height */
   --leading-none: var(--line-height-1);
-  --leading-tight: var(--line-height-1-4);
-  --leading-snug: var(--line-height-1-43);
-  --leading-normal: var(--line-height-1-5);
-  --leading-relaxed: var(--line-height-1-6);
+  --leading-tight: var(--line-height-1-19);
+  --leading-snug: var(--line-height-1-4);
+  --leading-normal: var(--line-height-1-43);
+  --leading-relaxed: var(--line-height-1-5);
+  --leading-loose: var(--line-height-1-6);
+
+  /* Letter Spacing */
+  --tracking-wide: var(--letter-spacing-wide);
 
   /* ========================================
      SPACING - Semantic
@@ -196,7 +201,8 @@
 }
 
 /* ========================================
-   DARK MODE (Optional)
+   DARK MODE
+   @theme 바깥에서 정의 (CSS cascade 활용)
    ======================================== */
 .dark {
   /* Surface */
