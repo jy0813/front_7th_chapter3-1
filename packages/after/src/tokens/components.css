@@ -280,138 +280,136 @@
 }
 
 /* 2. 컴포넌트 전용 타이포그래피 유틸리티 (@utility)
-  - 기존: --text-card-title, --leading-card-title 등 변수 파편화
-  - 변경: @utility text-card-title {...} 하나로 통합
-  - 효과: 개발자는 text-card-title 클래스만 사용하면 폰트크기, 행간, 굵기 자동 적용
+  - 효과: 개발자는 typo-card-title 클래스만 사용하면 폰트크기, 행간, 굵기 자동 적용
 */
 
 /* Button Text */
-@utility text-btn-sm {
+@utility typo-btn-sm {
   font-size: var(--text-sm);
   line-height: var(--leading-relaxed);
-  font-weight: var(--font-medium);
+  font-weight: var(--font-normal);
 }
-@utility text-btn-md {
+@utility typo-btn-md {
   font-size: var(--text-base);
   line-height: var(--leading-relaxed);
-  font-weight: var(--font-medium);
+  font-weight: var(--font-normal);
 }
-@utility text-btn-lg {
+@utility typo-btn-lg {
   font-size: var(--text-md);
   line-height: var(--leading-relaxed);
-  font-weight: var(--font-medium);
+  font-weight: var(--font-normal);
 }
 
 /* Badge Text */
-@utility text-badge-sm {
+@utility typo-badge-sm {
   font-size: var(--text-xs);
   line-height: var(--leading-none);
   font-weight: var(--font-bold);
 }
-@utility text-badge-md {
+@utility typo-badge-md {
   font-size: var(--text-sm);
   line-height: var(--leading-none);
   font-weight: var(--font-bold);
 }
-@utility text-badge-lg {
+@utility typo-badge-lg {
   font-size: var(--text-sm);
   line-height: var(--leading-none);
   font-weight: var(--font-bold);
 }
 
 /* Input Text */
-@utility text-input {
+@utility typo-input {
   font-size: var(--text-base);
   line-height: var(--leading-normal);
   font-weight: var(--font-normal);
 }
 
 /* Label & Helper */
-@utility text-label {
+@utility typo-label {
   font-size: var(--text-sm);
   line-height: var(--leading-snug);
   font-weight: var(--font-medium);
 }
-@utility text-helper {
+@utility typo-helper {
   font-size: var(--text-sm);
   line-height: var(--leading-normal);
   font-weight: var(--font-normal);
 }
 
 /* Card Text */
-@utility text-card-title {
+@utility typo-card-title {
   font-size: var(--text-xl);
   line-height: var(--leading-loose);
   font-weight: var(--font-medium);
 }
-@utility text-card-subtitle {
+@utility typo-card-subtitle {
   font-size: var(--text-base);
   line-height: var(--leading-normal);
   font-weight: var(--font-normal);
 }
 
 /* Alert Text */
-@utility text-alert-title {
+@utility typo-alert-title {
   font-size: var(--text-md);
   line-height: var(--leading-snug);
   font-weight: var(--font-bold);
 }
-@utility text-alert-body {
+@utility typo-alert-body {
   font-size: var(--text-base);
   line-height: var(--leading-relaxed);
   font-weight: var(--font-normal);
 }
-@utility text-alert-icon {
+@utility typo-alert-icon {
   font-size: var(--text-2xl);
   line-height: 1; /* 아이콘은 보통 tight하게 */
 }
-@utility text-alert-close {
+@utility typo-alert-close {
   font-size: var(--text-2xl);
   line-height: 1;
 }
 
 /* Modal Text */
-@utility text-modal-title {
+@utility typo-modal-title {
   font-size: var(--text-xl);
   line-height: var(--leading-snug);
   font-weight: var(--font-medium);
 }
-@utility text-modal-close {
+@utility typo-modal-close {
   font-size: var(--text-3xl);
   line-height: 1;
 }
 
 /* Table Text */
-@utility text-table-header {
+@utility typo-table-header {
   font-size: var(--text-sm);
   line-height: var(--leading-normal);
   font-weight: var(--font-medium);
   letter-spacing: var(--tracking-wide);
 }
-@utility text-table-cell {
+@utility typo-table-cell {
   font-size: var(--text-base);
   line-height: var(--leading-normal);
   font-weight: var(--font-normal);
 }
 
 /* Checkbox Text */
-@utility text-checkbox-label {
+@utility typo-checkbox-label {
   font-size: var(--text-base);
   line-height: var(--leading-snug);
   font-weight: var(--font-normal);
 }
-@utility text-checkbox-hint {
+@utility typo-checkbox-hint {
   font-size: var(--text-sm);
   line-height: var(--leading-normal);
   font-weight: var(--font-normal);
 }
-@utility text-checkbox-checkmark {
+@utility typo-checkbox-checkmark {
   font-size: var(--text-xs);
   line-height: 1;
 }
 
 /* Textarea Text */
-@utility text-textarea {
+@utility typo-textarea {
   font-size: var(--text-lg);
   line-height: var(--leading-tight);
   font-weight: var(--font-normal);
@@ -432,20 +430,4 @@
 @utility padding-btn-lg {
   padding-block: var(--spacing-12); /* 상하 12px */
   padding-inline: var(--spacing-24); /* 좌우 24px */
-}
-
-@utility typo-btn-sm {
-  font-size: var(--text-sm);
-  line-height: var(--leading-relaxed);
-  font-weight: var(--font-normal);
-}
-@utility typo-btn-md {
-  font-size: var(--text-base);
-  line-height: var(--leading-relaxed);
-  font-weight: var(--font-normal);
-}
-@utility typo-btn-lg {
-  font-size: var(--text-md);
-  line-height: var(--leading-relaxed);
-  font-weight: var(--font-normal);
 }
