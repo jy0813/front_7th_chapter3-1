@@ -44,18 +44,19 @@
 
   /* ========================================
      COLORS - Surface (배경)
+     동적 변수(--raw-*) 참조 → 다크모드 지원
      ======================================== */
 
   /* Background */
-  --color-background: var(--color-white);
-  --color-background-subtle: var(--color-gray-50);
-  --color-background-muted: var(--color-gray-100);
-  --color-background-disabled: var(--color-gray-100);
+  --color-background: var(--raw-background);
+  --color-background-subtle: var(--raw-background-subtle);
+  --color-background-muted: var(--raw-background-muted);
+  --color-background-disabled: var(--raw-background-disabled);
 
   /* Foreground (텍스트) */
-  --color-foreground: var(--color-black-a87);
-  --color-foreground-muted: var(--color-black-a60);
-  --color-foreground-subtle: var(--color-black-a54);
+  --color-foreground: var(--raw-foreground);
+  --color-foreground-muted: var(--raw-foreground-muted);
+  --color-foreground-subtle: var(--raw-foreground-subtle);
   --color-foreground-disabled: var(--color-gray-600);
 
   /* ========================================
@@ -89,12 +90,25 @@
 
   /* ========================================
      COLORS - Border
+     동적 변수(--raw-*) 참조 → 다크모드 지원
      ======================================== */
-  --color-border: var(--color-black-a12);
-  --color-border-subtle: var(--color-black-a8);
-  --color-border-input: var(--color-gray-350);
+  --color-border: var(--raw-border);
+  --color-border-subtle: var(--raw-border-subtle);
+  --color-border-input: var(--raw-border-input);
   --color-border-focus: var(--color-blue-500);
   --color-border-error: var(--color-red-600);
+
+  /* ========================================
+     COLORS - Form Elements (다크모드 지원)
+     ======================================== */
+  --color-input-text: var(--raw-input-text);
+  --color-label-text: var(--raw-label-text);
+  --color-helper-text: var(--raw-helper-text);
+  --color-checkbox-border: var(--raw-checkbox-border);
+  --color-checkbox-label: var(--raw-checkbox-label);
+  --color-checkbox-hint: var(--raw-checkbox-hint);
+  --color-textarea-border: var(--raw-textarea-border);
+  --color-textarea-bg-disabled: var(--raw-textarea-bg-disabled);
 
   /* ========================================
      COLORS - Overlay
@@ -202,20 +216,7 @@
 
 /* ========================================
    DARK MODE
-   @theme 바깥에서 정의 (CSS cascade 활용)
+   이제 primitive.css의 :root/.dark에서 처리됨
+   @theme inline이 --raw-* 변수를 참조하므로
+   .dark 클래스 적용 시 자동으로 다크모드 적용
    ======================================== */
-.dark {
-  /* Surface */
-  --color-background: var(--color-gray-800);
-  --color-background-subtle: var(--color-gray-700);
-  --color-background-muted: var(--color-gray-700);
-
-  /* Foreground */
-  --color-foreground: var(--color-white);
-  --color-foreground-muted: var(--color-gray-300);
-  --color-foreground-subtle: var(--color-gray-400);
-
-  /* Border */
-  --color-border: var(--color-gray-600);
-  --color-border-subtle: var(--color-gray-700);
-}

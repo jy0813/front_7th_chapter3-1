@@ -182,3 +182,72 @@
   --font-sans: Arial, sans-serif;
   --font-system: 'Roboto', 'Helvetica', 'Arial', sans-serif;
 }
+
+/* ============================================
+   DYNAMIC TOKENS (Light/Dark Mode)
+   @theme 바깥에서 정의 - 런타임 변경 가능
+   ============================================ */
+
+:root {
+  /* Background */
+  --raw-background: var(--color-white);
+  --raw-background-subtle: var(--color-gray-50);
+  --raw-background-muted: var(--color-gray-100);
+  --raw-background-disabled: var(--color-gray-100);
+
+  /* Foreground */
+  --raw-foreground: var(--color-black-a87);
+  --raw-foreground-muted: var(--color-black-a60);
+  --raw-foreground-subtle: var(--color-black-a54);
+
+  /* Border */
+  --raw-border: var(--color-black-a12);
+  --raw-border-subtle: var(--color-black-a8);
+  --raw-border-input: var(--color-gray-350);
+
+  /* Input specific */
+  --raw-input-text: var(--color-black);
+  --raw-label-text: var(--color-gray-800);
+  --raw-helper-text: var(--color-gray-600);
+
+  /* Checkbox specific */
+  --raw-checkbox-border: var(--color-gray-300);
+  --raw-checkbox-label: var(--color-gray-750);
+  --raw-checkbox-hint: var(--color-gray-550);
+
+  /* Textarea specific */
+  --raw-textarea-border: var(--color-black-a23);
+  --raw-textarea-bg-disabled: var(--color-black-a12);
+}
+
+.dark {
+  /* Background */
+  --raw-background: var(--color-gray-800);
+  --raw-background-subtle: var(--color-gray-700);
+  --raw-background-muted: var(--color-gray-700);
+  --raw-background-disabled: var(--color-gray-600);
+
+  /* Foreground */
+  --raw-foreground: var(--color-white);
+  --raw-foreground-muted: var(--color-gray-300);
+  --raw-foreground-subtle: var(--color-gray-400);
+
+  /* Border */
+  --raw-border: var(--color-gray-600);
+  --raw-border-subtle: var(--color-gray-700);
+  --raw-border-input: var(--color-gray-500);
+
+  /* Input specific */
+  --raw-input-text: var(--color-white);
+  --raw-label-text: var(--color-gray-200);
+  --raw-helper-text: var(--color-gray-400);
+
+  /* Checkbox specific */
+  --raw-checkbox-border: var(--color-gray-500);
+  --raw-checkbox-label: var(--color-gray-200);
+  --raw-checkbox-hint: var(--color-gray-400);
+
+  /* Textarea specific */
+  --raw-textarea-border: var(--color-gray-500);
+  --raw-textarea-bg-disabled: var(--color-gray-700);
+}

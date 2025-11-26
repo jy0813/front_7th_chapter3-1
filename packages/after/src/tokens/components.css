@@ -146,7 +146,7 @@
   /* Colors */
   --color-input-bg: var(--color-background);
   --color-input-bg-disabled: var(--color-background-disabled);
-  --color-input-text: var(--color-black);
+  --color-input-text: var(--color-input-text);
   --color-input-border: var(--color-border-input);
   --color-input-border-focus: var(--color-border-focus);
   --color-input-border-error: var(--color-border-error);
@@ -156,7 +156,7 @@
      ======================================== */
 
   --text-label: var(--text-sm);
-  --color-label-text: var(--color-gray-800);
+  --color-label-text: var(--color-label-text);
   --color-label-required: var(--color-destructive);
   --spacing-label-sm: var(--space-sm);
   --spacing-label-md: var(--space-md);
@@ -170,7 +170,7 @@
      ======================================== */
 
   --text-helper: var(--text-sm);
-  --color-helper-text: var(--color-foreground-disabled);
+  --color-helper-text: var(--color-helper-text);
   --color-helper-error: var(--color-destructive);
   --spacing-helper-sm: var(--space-sm);
   --spacing-helper-md: var(--space-md);
@@ -362,7 +362,7 @@
 
   /* Base */
   --radius-checkbox: var(--rounded-sm);
-  --color-checkbox-border: var(--color-gray-300);
+  --color-checkbox-border: var(--color-checkbox-border);
   --color-checkbox-bg: var(--color-background);
   --color-checkbox-bg-checked: var(--color-primary);
   --color-checkbox-border-checked: var(--color-primary);
@@ -372,12 +372,12 @@
   /* Label */
   --text-checkbox-label: var(--text-base);
   --leading-checkbox-label: var(--leading-snug);
-  --color-checkbox-label: var(--color-gray-750);
+  --color-checkbox-label: var(--color-checkbox-label);
   --color-checkbox-label-error: var(--color-red-500);
 
   /* Hint */
   --text-checkbox-hint: var(--text-sm);
-  --color-checkbox-hint: var(--color-gray-550);
+  --color-checkbox-hint: var(--color-checkbox-hint);
 
   /* ========================================
      TEXTAREA
@@ -395,11 +395,11 @@
   --text-textarea: var(--text-lg);
   --leading-textarea: var(--leading-tight);
   --radius-textarea: var(--rounded-md);
-  --color-textarea-border: var(--color-black-a23);
+  --color-textarea-border: var(--color-textarea-border);
   --color-textarea-border-focus: var(--color-border-focus);
   --color-textarea-border-error: var(--color-border-error);
   --color-textarea-bg: var(--color-background);
-  --color-textarea-bg-disabled: var(--color-black-a12);
+  --color-textarea-bg-disabled: var(--color-textarea-bg-disabled);
   --color-textarea-text: var(--color-foreground);
 
   /* ========================================
