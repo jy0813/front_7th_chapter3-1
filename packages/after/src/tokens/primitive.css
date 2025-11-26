@@ -1,20 +1,12 @@
 /* ============================================
    PRIMITIVE TOKENS
-   순수 값만 정의, 의미(semantic) 없음
-   Tailwind 유틸리티 클래스로 사용 가능
-
-   네이밍 규칙:
-   - 색상: --color-{hue}-{scale}
-   - 간격: --spacing-{px}
-   - 폰트: --font-size-{px}, --font-weight-{value}
+   순수 값 정의 (No Semantic Meaning)
    ============================================ */
 
 @theme {
   /* ----------------------------------------
      COLORS - Solid
      ---------------------------------------- */
-
-  /* White & Black */
   --color-white: #ffffff;
   --color-black: #000000;
 
@@ -62,7 +54,7 @@
   --color-orange-800: #e65100;
 
   /* ----------------------------------------
-     COLORS - Alpha (투명도)
+     COLORS - Alpha
      ---------------------------------------- */
   --color-black-a4: rgba(0, 0, 0, 0.04);
   --color-black-a8: rgba(0, 0, 0, 0.08);
@@ -163,18 +155,25 @@
   --opacity-100: 1;
 
   /* ----------------------------------------
-     DURATION
+     DURATION & EASING (Updated)
      ---------------------------------------- */
   --duration-150: 150ms;
   --duration-200: 200ms;
   --duration-1400: 1400ms;
+  --ease-in-out: cubic-bezier(0.4, 0, 0.2, 1);
 
   /* ----------------------------------------
      SHADOW
      ---------------------------------------- */
-  --shadow-1: 0px 2px 1px -1px rgba(0, 0, 0, 0.2), 0px 1px 1px 0px rgba(0, 0, 0, 0.14), 0px 1px 3px 0px rgba(0, 0, 0, 0.12);
-  --shadow-2: 0px 2px 4px -1px rgba(0, 0, 0, 0.12), 0px 1px 2px 0px rgba(0, 0, 0, 0.08), 0px 1px 4px 0px rgba(0, 0, 0, 0.08);
-  --shadow-3: 0px 11px 15px -7px rgba(0, 0, 0, 0.2), 0px 24px 38px 3px rgba(0, 0, 0, 0.14), 0px 9px 46px 8px rgba(0, 0, 0, 0.12);
+  --shadow-1:
+    0px 2px 1px -1px rgba(0, 0, 0, 0.2), 0px 1px 1px 0px rgba(0, 0, 0, 0.14),
+    0px 1px 3px 0px rgba(0, 0, 0, 0.12);
+  --shadow-2:
+    0px 2px 4px -1px rgba(0, 0, 0, 0.12), 0px 1px 2px 0px rgba(0, 0, 0, 0.08),
+    0px 1px 4px 0px rgba(0, 0, 0, 0.08);
+  --shadow-3:
+    0px 11px 15px -7px rgba(0, 0, 0, 0.2),
+    0px 24px 38px 3px rgba(0, 0, 0, 0.14), 0px 9px 46px 8px rgba(0, 0, 0, 0.12);
 
   /* ----------------------------------------
      FONT FAMILY
@@ -185,69 +184,70 @@
 
 /* ============================================
    DYNAMIC TOKENS (Light/Dark Mode)
-   @theme 바깥에서 정의 - 런타임 변경 가능
+   Wrapped in @layer base for best practice
    ============================================ */
+@layer base {
+  :root {
+    /* Background */
+    --raw-background: var(--color-white);
+    --raw-background-subtle: var(--color-gray-50);
+    --raw-background-muted: var(--color-gray-100);
+    --raw-background-disabled: var(--color-gray-100);
 
-:root {
-  /* Background */
-  --raw-background: var(--color-white);
-  --raw-background-subtle: var(--color-gray-50);
-  --raw-background-muted: var(--color-gray-100);
-  --raw-background-disabled: var(--color-gray-100);
+    /* Foreground */
+    --raw-foreground: var(--color-black-a87);
+    --raw-foreground-muted: var(--color-black-a60);
+    --raw-foreground-subtle: var(--color-black-a54);
 
-  /* Foreground */
-  --raw-foreground: var(--color-black-a87);
-  --raw-foreground-muted: var(--color-black-a60);
-  --raw-foreground-subtle: var(--color-black-a54);
+    /* Border */
+    --raw-border: var(--color-black-a12);
+    --raw-border-subtle: var(--color-black-a8);
+    --raw-border-input: var(--color-gray-350);
 
-  /* Border */
-  --raw-border: var(--color-black-a12);
-  --raw-border-subtle: var(--color-black-a8);
-  --raw-border-input: var(--color-gray-350);
+    /* Input specific */
+    --raw-input-text: var(--color-black);
+    --raw-label-text: var(--color-gray-800);
+    --raw-helper-text: var(--color-gray-600);
 
-  /* Input specific */
-  --raw-input-text: var(--color-black);
-  --raw-label-text: var(--color-gray-800);
-  --raw-helper-text: var(--color-gray-600);
+    /* Checkbox specific */
+    --raw-checkbox-border: var(--color-gray-300);
+    --raw-checkbox-label: var(--color-gray-750);
+    --raw-checkbox-hint: var(--color-gray-550);
 
-  /* Checkbox specific */
-  --raw-checkbox-border: var(--color-gray-300);
-  --raw-checkbox-label: var(--color-gray-750);
-  --raw-checkbox-hint: var(--color-gray-550);
+    /* Textarea specific */
+    --raw-textarea-border: var(--color-black-a23);
+    --raw-textarea-bg-disabled: var(--color-black-a12);
+  }
 
-  /* Textarea specific */
-  --raw-textarea-border: var(--color-black-a23);
-  --raw-textarea-bg-disabled: var(--color-black-a12);
-}
+  .dark {
+    /* Background */
+    --raw-background: var(--color-gray-800);
+    --raw-background-subtle: var(--color-gray-700);
+    --raw-background-muted: var(--color-gray-700);
+    --raw-background-disabled: var(--color-gray-600);
 
-.dark {
-  /* Background */
-  --raw-background: var(--color-gray-800);
-  --raw-background-subtle: var(--color-gray-700);
-  --raw-background-muted: var(--color-gray-700);
-  --raw-background-disabled: var(--color-gray-600);
+    /* Foreground */
+    --raw-foreground: var(--color-white);
+    --raw-foreground-muted: var(--color-gray-300);
+    --raw-foreground-subtle: var(--color-gray-400);
 
-  /* Foreground */
-  --raw-foreground: var(--color-white);
-  --raw-foreground-muted: var(--color-gray-300);
-  --raw-foreground-subtle: var(--color-gray-400);
+    /* Border */
+    --raw-border: var(--color-gray-600);
+    --raw-border-subtle: var(--color-gray-700);
+    --raw-border-input: var(--color-gray-500);
 
-  /* Border */
-  --raw-border: var(--color-gray-600);
-  --raw-border-subtle: var(--color-gray-700);
-  --raw-border-input: var(--color-gray-500);
+    /* Input specific */
+    --raw-input-text: var(--color-white);
+    --raw-label-text: var(--color-gray-200);
+    --raw-helper-text: var(--color-gray-400);
 
-  /* Input specific */
-  --raw-input-text: var(--color-white);
-  --raw-label-text: var(--color-gray-200);
-  --raw-helper-text: var(--color-gray-400);
+    /* Checkbox specific */
+    --raw-checkbox-border: var(--color-gray-500);
+    --raw-checkbox-label: var(--color-gray-200);
+    --raw-checkbox-hint: var(--color-gray-400);
 
-  /* Checkbox specific */
-  --raw-checkbox-border: var(--color-gray-500);
-  --raw-checkbox-label: var(--color-gray-200);
-  --raw-checkbox-hint: var(--color-gray-400);
-
-  /* Textarea specific */
-  --raw-textarea-border: var(--color-gray-500);
-  --raw-textarea-bg-disabled: var(--color-gray-700);
+    /* Textarea specific */
+    --raw-textarea-border: var(--color-gray-500);
+    --raw-textarea-bg-disabled: var(--color-gray-700);
+  }
 }

@@ -9,6 +9,10 @@
 @import 'tw-animate-css';
 
 /* 토큰 시스템 (primitive → semantic → components 순서로 체이닝됨) */
+@import '@/tokens/primitive.css';
+/* 2. 그 다음 의미(Semantic) 매핑 */
+@import '@/tokens/semantic.css';
+/* 3. 마지막으로 컴포넌트(Component) */
 @import '@/tokens/components.css';
 
 @custom-variant dark (&:is(.dark *));

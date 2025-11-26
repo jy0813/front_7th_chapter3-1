@@ -1,130 +1,120 @@
 /* ============================================
    SEMANTIC TOKENS
-   의미/용도 기반 토큰 - Primitive 참조
-   Tailwind 유틸리티 클래스로 사용 가능
-
-   계층: Primitive → Semantic → Component
+   목적: Primitive 값을 '의미(Intent)'와 '맥락'에 맞게 매핑
+   특징: 다크모드 자동 대응, Tailwind 유틸리티 생성 규칙 준수
    ============================================ */
 
-@import '@/tokens/primitive.css';
+@import './primitive.css';
 
 @theme inline {
-  /* ========================================
-     COLORS - Intent Based
-     ======================================== */
-
-  /* Primary - 주요 액션, 브랜드 */
+  /* ----------------------------------------
+     COLORS - Intent Based (브랜드 및 상태 색상)
+     ---------------------------------------- */
+  /* Primary: 주요 액션 */
   --color-primary: var(--color-blue-500);
   --color-primary-hover: var(--color-blue-600);
   --color-primary-foreground: var(--color-white);
 
-  /* Secondary - 보조 액션 */
+  /* Secondary: 보조 액션 */
   --color-secondary: var(--color-gray-100);
   --color-secondary-hover: var(--color-gray-200);
   --color-secondary-foreground: var(--color-gray-800);
   --color-secondary-border: var(--color-gray-350);
 
-  /* Destructive/Danger - 삭제, 위험 */
+  /* Feedback Colors */
   --color-destructive: var(--color-red-600);
   --color-destructive-hover: var(--color-red-700);
   --color-destructive-foreground: var(--color-white);
 
-  /* Success - 성공, 완료 */
   --color-success: var(--color-green-600);
   --color-success-hover: var(--color-green-700);
   --color-success-foreground: var(--color-white);
 
-  /* Warning - 경고 */
   --color-warning: var(--color-orange-600);
   --color-warning-foreground: var(--color-white);
 
-  /* Info - 정보 */
   --color-info: var(--color-blue-700);
   --color-info-foreground: var(--color-white);
 
-  /* ========================================
-     COLORS - Surface (배경)
-     동적 변수(--raw-*) 참조 → 다크모드 지원
-     ======================================== */
-
-  /* Background */
+  /* ----------------------------------------
+     COLORS - Surface (배경/텍스트)
+     * Primitive의 Dynamic Token(--raw-*)을 참조하여
+     * 별도 설정 없이 다크모드가 자동 적용되도록 설계됨
+     ---------------------------------------- */
   --color-background: var(--raw-background);
   --color-background-subtle: var(--raw-background-subtle);
   --color-background-muted: var(--raw-background-muted);
   --color-background-disabled: var(--raw-background-disabled);
 
-  /* Foreground (텍스트) */
   --color-foreground: var(--raw-foreground);
   --color-foreground-muted: var(--raw-foreground-muted);
   --color-foreground-subtle: var(--raw-foreground-subtle);
   --color-foreground-disabled: var(--color-gray-600);
 
-  /* ========================================
-     COLORS - Feedback (Alert 상태별)
-     ======================================== */
-
-  /* Info Alert */
+  /* ----------------------------------------
+     COLORS - Alert (Feedback Variants)
+     ---------------------------------------- */
   --color-feedback-info-bg: var(--color-blue-50);
   --color-feedback-info-border: var(--color-blue-200);
   --color-feedback-info-text: var(--color-blue-900);
 
-  /* Success Alert */
   --color-feedback-success-bg: var(--color-green-50);
   --color-feedback-success-border: var(--color-green-300);
   --color-feedback-success-text: var(--color-green-900);
 
-  /* Warning Alert */
   --color-feedback-warning-bg: var(--color-orange-50);
   --color-feedback-warning-border: var(--color-orange-300);
   --color-feedback-warning-text: var(--color-orange-800);
 
-  /* Error Alert */
   --color-feedback-error-bg: var(--color-red-50);
   --color-feedback-error-border: var(--color-red-300);
   --color-feedback-error-text: var(--color-red-900);
 
-  /* Default/Neutral Alert */
   --color-feedback-default-bg: var(--color-gray-100);
   --color-feedback-default-border: var(--color-gray-400);
   --color-feedback-default-text: var(--color-gray-700);
 
-  /* ========================================
-     COLORS - Border
-     동적 변수(--raw-*) 참조 → 다크모드 지원
-     ======================================== */
+  /* ----------------------------------------
+     COLORS - Border & Focus
+     ---------------------------------------- */
   --color-border: var(--raw-border);
   --color-border-subtle: var(--raw-border-subtle);
   --color-border-input: var(--raw-border-input);
   --color-border-focus: var(--color-blue-500);
   --color-border-error: var(--color-red-600);
 
-  /* ========================================
-     COLORS - Form Elements (다크모드 지원)
-     ======================================== */
+  /* 접근성(a11y)을 위한 Focus Ring 설정 */
+  --width-focus-ring: 2px;
+  --width-focus-offset: 2px;
+  --color-focus-ring: var(--color-blue-500);
+
+  /* ----------------------------------------
+     COLORS - Form Specific
+     ---------------------------------------- */
   --color-input-text: var(--raw-input-text);
   --color-label-text: var(--raw-label-text);
   --color-helper-text: var(--raw-helper-text);
+
   --color-checkbox-border: var(--raw-checkbox-border);
   --color-checkbox-label: var(--raw-checkbox-label);
   --color-checkbox-hint: var(--raw-checkbox-hint);
+
   --color-textarea-border: var(--raw-textarea-border);
   --color-textarea-bg-disabled: var(--raw-textarea-bg-disabled);
 
-  /* ========================================
+  /* ----------------------------------------
      COLORS - Overlay
-     ======================================== */
+     ---------------------------------------- */
   --color-overlay: var(--color-black-a50);
   --color-hover-overlay: var(--color-black-a4);
 
-  /* ========================================
-     TYPOGRAPHY - Semantic
-     ======================================== */
-
-  /* Font Family */
+  /* ----------------------------------------
+     TYPOGRAPHY VARIABLES (참조용)
+     * 직접 사용하기보다는 아래 @utility에서 조합하여 사용 권장
+     ---------------------------------------- */
   --font-family-base: var(--font-sans);
   --font-family-body: var(--font-system);
 
-  /* Font Size - Scale */
   --text-xs: var(--font-size-10);
   --text-sm: var(--font-size-12);
   --text-base: var(--font-size-14);
@@ -134,12 +124,10 @@
   --text-2xl: var(--font-size-20);
   --text-3xl: var(--font-size-28);
 
-  /* Font Weight */
   --font-normal: var(--font-weight-400);
   --font-medium: var(--font-weight-500);
   --font-bold: var(--font-weight-700);
 
-  /* Line Height */
   --leading-none: var(--line-height-1);
   --leading-tight: var(--line-height-1-19);
   --leading-snug: var(--line-height-1-4);
@@ -147,76 +135,128 @@
   --leading-relaxed: var(--line-height-1-5);
   --leading-loose: var(--line-height-1-6);
 
-  /* Letter Spacing */
   --tracking-wide: var(--letter-spacing-wide);
 
-  /* ========================================
-     SPACING - Semantic
-     ======================================== */
-  --space-none: var(--spacing-0);
-  --space-xs: var(--spacing-2);
-  --space-sm: var(--spacing-4);
-  --space-md: var(--spacing-8);
-  --space-lg: var(--spacing-12);
-  --space-xl: var(--spacing-16);
-  --space-2xl: var(--spacing-20);
-  --space-3xl: var(--spacing-24);
-  --space-4xl: var(--spacing-32);
+  /* ----------------------------------------
+     SPACING (Namespace: --spacing)
+     * 접두사를 --spacing으로 통일하여 p-md, m-lg, gap-xl 등 생성
+     ---------------------------------------- */
+  --spacing-none: var(--spacing-0);
+  --spacing-xs: var(--spacing-2);
+  --spacing-sm: var(--spacing-4);
+  --spacing-md: var(--spacing-8);
+  --spacing-lg: var(--spacing-12);
+  --spacing-xl: var(--spacing-16);
+  --spacing-2xl: var(--spacing-20);
+  --spacing-3xl: var(--spacing-24);
+  --spacing-4xl: var(--spacing-32);
 
-  /* ========================================
-     RADIUS - Semantic
-     ======================================== */
-  --rounded-none: var(--radius-0);
-  --rounded-sm: var(--radius-2);
-  --rounded-base: var(--radius-3);
-  --rounded-md: var(--radius-4);
-  --rounded-lg: var(--radius-10);
-  --rounded-full: var(--radius-full);
+  /* ----------------------------------------
+     RADIUS (Namespace: --radius)
+     * 접두사를 --radius로 통일하여 rounded-md 등 생성
+     ---------------------------------------- */
+  --radius-none: var(--radius-0);
+  --radius-sm: var(--radius-2);
+  --radius-base: var(--radius-3);
+  --radius-md: var(--radius-4);
+  --radius-lg: var(--radius-10);
+  --radius-full: var(--radius-full);
 
-  /* ========================================
-     SHADOW - Semantic
-     ======================================== */
+  /* ----------------------------------------
+     WIDTH / SIZE (Namespace: --width)
+     * 접두사를 --width로 통일하여 w-icon-sm 등 생성
+     ---------------------------------------- */
+  --width-icon-sm: var(--width-16);
+  --width-icon-md: var(--width-32);
+  --width-input-sm: var(--width-200);
+  --width-input-md: var(--width-300);
+  --width-input-lg: var(--width-400);
+  --width-modal-sm: var(--width-400);
+  --width-modal-md: var(--width-600);
+  --width-modal-lg: var(--width-900);
+
+  /* ----------------------------------------
+     SHADOW & Z-INDEX & ANIMATION
+     ---------------------------------------- */
   --shadow-sm: var(--shadow-1);
   --shadow-md: var(--shadow-2);
   --shadow-lg: var(--shadow-3);
   --shadow-none: none;
 
-  /* ========================================
-     WIDTH - Semantic
-     ======================================== */
-  --size-icon-sm: var(--width-16);
-  --size-icon-md: var(--width-32);
-  --size-input-sm: var(--width-200);
-  --size-input-md: var(--width-300);
-  --size-input-lg: var(--width-400);
-  --size-modal-sm: var(--width-400);
-  --size-modal-md: var(--width-600);
-  --size-modal-lg: var(--width-900);
-
-  /* ========================================
-     Z-INDEX - Semantic
-     ======================================== */
   --z-base: var(--z-0);
   --z-dropdown: var(--z-10);
   --z-sticky: var(--z-100);
   --z-modal: var(--z-1000);
 
-  /* ========================================
-     ANIMATION - Semantic
-     ======================================== */
   --duration-fast: var(--duration-150);
   --duration-normal: var(--duration-200);
   --duration-slow: var(--duration-1400);
+  --ease-default: var(--ease-in-out);
 
-  /* ========================================
-     STATE - Semantic
-     ======================================== */
   --opacity-disabled: var(--opacity-60);
 }
 
-/* ========================================
-   DARK MODE
-   이제 primitive.css의 :root/.dark에서 처리됨
-   @theme inline이 --raw-* 변수를 참조하므로
-   .dark 클래스 적용 시 자동으로 다크모드 적용
-   ======================================== */
+/* ============================================
+   SYSTEM TYPOGRAPHY UTILITIES
+   목적: 폰트 크기(size)와 행간(leading), 굵기(weight)를 
+        하나의 클래스로 결합(Coupling)하여 실수 방지
+   사용: class="text-display"
+   ============================================ */
+
+@utility text-display {
+  font-family: var(--font-family-base);
+  font-size: var(--text-3xl);
+  line-height: var(--leading-tight);
+  font-weight: var(--font-bold);
+  letter-spacing: -0.02em;
+}
+
+@utility text-heading-lg {
+  font-family: var(--font-family-base);
+  font-size: var(--text-2xl);
+  line-height: var(--leading-snug);
+  font-weight: var(--font-bold);
+}
+
+@utility text-heading-md {
+  font-family: var(--font-family-base);
+  font-size: var(--text-xl);
+  line-height: var(--leading-snug);
+  font-weight: var(--font-medium);
+}
+
+@utility text-heading-sm {
+  font-family: var(--font-family-base);
+  font-size: var(--text-lg);
+  line-height: var(--leading-snug);
+  font-weight: var(--font-medium);
+}
+
+@utility text-body-lg {
+  font-family: var(--font-family-body);
+  font-size: var(--text-lg);
+  line-height: var(--leading-relaxed);
+  font-weight: var(--font-normal);
+}
+
+@utility text-body-base {
+  font-family: var(--font-family-body);
+  font-size: var(--text-base);
+  line-height: var(--leading-normal);
+  font-weight: var(--font-normal);
+}
+
+@utility text-body-sm {
+  font-family: var(--font-family-body);
+  font-size: var(--text-sm);
+  line-height: var(--leading-normal);
+  font-weight: var(--font-normal);
+}
+
+@utility text-caption {
+  font-family: var(--font-family-body);
+  font-size: var(--text-xs);
+  line-height: var(--leading-normal);
+  font-weight: var(--font-medium);
+  color: var(--color-foreground-muted);
+}

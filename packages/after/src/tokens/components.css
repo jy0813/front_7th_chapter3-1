@@ -1,70 +1,46 @@
 /* ============================================
-   COMPONENT TOKENS
-   컴포넌트별 스타일 토큰 - Semantic 참조
-   Tailwind 유틸리티 클래스로 사용 가능
-
-   네이밍 규칙:
-   - {component}-{size}: 사이즈 변형 (btn-sm, btn-md, btn-lg)
-   - {component}: 단일 값 (alert, card, input)
-   - {component}-{part}: 부분별 구분 (card-header, card-body)
-   - {component}-{variant}-{prop}: 색상 변형 (btn-primary-bg)
-
-   사용법:
-   --spacing-btn-md 정의 → py-btn-md, px-btn-md, p-btn-md 모두 사용 가능
-   세로/가로 값이 다르면 다른 사이즈 조합: py-btn-sm px-btn-lg
-
-   계층: Primitive → Semantic → Component
+   COMPONENT TOKENS & UTILITIES
+   목적: 컴포넌트별로 구체화된 스타일 정의
+   구조: 
+     1. @theme: 색상, 간격, 둥글기 등 '값(Value)' 정의
+     2. @utility: 폰트+행간 등 '복합 스타일(Composite Style)' 정의
    ============================================ */
 
-@import '@/tokens/semantic.css';
+@import './semantic.css';
 
+/* 1. 단일 값(Value) 토큰 정의 */
 @theme inline {
   /* ========================================
      BUTTON
      ======================================== */
+  /* Spacing: Semantic Spacing 참조 */
+  --spacing-btn-sm: var(--spacing-sm);
+  --spacing-btn-md: var(--spacing-md);
+  --spacing-btn-lg: var(--spacing-lg);
+  --spacing-btn-xl: var(--spacing-xl);
+  --spacing-btn-2xl: var(--spacing-2xl);
+  --spacing-btn-3xl: var(--spacing-3xl);
 
-  /* Spacing by size */
-  --spacing-btn-sm: var(--space-sm);
-  --spacing-btn-md: var(--space-md);
-  --spacing-btn-lg: var(--space-lg);
-  --spacing-btn-xl: var(--space-xl);
-  --spacing-btn-2xl: var(--space-2xl);
-  --spacing-btn-3xl: var(--space-3xl);
-
-  /* Font Size */
-  --text-btn-sm: var(--text-sm);
-  --text-btn-md: var(--text-base);
-  --text-btn-lg: var(--text-md);
-
-  /* Font Weight & Line Height */
-  --font-btn: var(--font-normal);
-  --leading-btn: var(--leading-relaxed);
-
-  /* State */
+  /* Base Style */
+  --radius-btn: var(--radius-base);
   --opacity-btn-disabled: var(--opacity-disabled);
 
-  /* Radius */
-  --radius-btn: var(--rounded-base);
-
-  /* Variant: primary */
+  /* Color Variants */
   --color-btn-primary-bg: var(--color-primary);
   --color-btn-primary-bg-hover: var(--color-primary-hover);
   --color-btn-primary-text: var(--color-primary-foreground);
   --color-btn-primary-border: var(--color-primary-hover);
 
-  /* Variant: secondary */
   --color-btn-secondary-bg: var(--color-secondary);
   --color-btn-secondary-bg-hover: var(--color-secondary-hover);
   --color-btn-secondary-text: var(--color-secondary-foreground);
   --color-btn-secondary-border: var(--color-secondary-border);
 
-  /* Variant: destructive */
   --color-btn-destructive-bg: var(--color-destructive);
   --color-btn-destructive-bg-hover: var(--color-destructive-hover);
   --color-btn-destructive-text: var(--color-destructive-foreground);
   --color-btn-destructive-border: var(--color-destructive-hover);
 
-  /* Variant: success */
   --color-btn-success-bg: var(--color-success);
   --color-btn-success-bg-hover: var(--color-success-hover);
   --color-btn-success-text: var(--color-success-foreground);
@@ -73,77 +49,54 @@
   /* ========================================
      BADGE
      ======================================== */
+  --spacing-badge-sm: var(--spacing-sm);
+  --spacing-badge-md: var(--spacing-md);
+  --spacing-badge-lg: var(--spacing-lg);
+  --spacing-badge-xl: var(--spacing-xl);
+  --spacing-badge-2xl: var(--spacing-2xl);
+  --spacing-badge-3xl: var(--spacing-3xl);
 
-  /* Spacing by size */
-  --spacing-badge-sm: var(--space-sm);
-  --spacing-badge-md: var(--space-md);
-  --spacing-badge-lg: var(--space-lg);
-  --spacing-badge-xl: var(--space-xl);
-  --spacing-badge-2xl: var(--space-2xl);
-  --spacing-badge-3xl: var(--space-3xl);
+  /* Height를 위한 Spacing (Semantic Width 참조) */
+  --spacing-badge-h-sm: var(--width-icon-sm);
+  --spacing-badge-h-md: var(--spacing-2xl);
+  --spacing-badge-h-lg: var(--spacing-3xl);
+  --spacing-badge-h-xl: var(--spacing-4xl);
+  --spacing-badge-h-2xl: var(--spacing-4xl);
+  --spacing-badge-h-3xl: var(--spacing-4xl);
 
-  /* Height by size */
-  --spacing-badge-h-sm: var(--size-icon-sm);
-  --spacing-badge-h-md: var(--space-2xl);
-  --spacing-badge-h-lg: var(--space-3xl);
-  --spacing-badge-h-xl: var(--space-4xl);
-  --spacing-badge-h-2xl: var(--space-4xl);
-  --spacing-badge-h-3xl: var(--space-4xl);
+  --radius-badge: var(--radius-base);
+  --radius-badge-pill: var(--radius-lg);
 
-  /* Font Size */
-  --text-badge-sm: var(--text-xs);
-  --text-badge-md: var(--text-sm);
-  --text-badge-lg: var(--text-sm);
-
-  /* Font Weight & Line Height */
-  --font-badge: var(--font-bold);
-  --leading-badge: var(--leading-none);
-
-  /* Radius */
-  --radius-badge: var(--rounded-base);
-  --radius-badge-pill: var(--rounded-lg);
-
-  /* Variants */
+  /* Badge Color Variants */
   --color-badge-primary-bg: var(--color-primary);
   --color-badge-primary-text: var(--color-primary-foreground);
-
   --color-badge-secondary-bg: var(--color-gray-500);
   --color-badge-secondary-text: var(--color-white);
-
   --color-badge-success-bg: var(--color-success);
   --color-badge-success-text: var(--color-success-foreground);
-
   --color-badge-destructive-bg: var(--color-destructive);
   --color-badge-destructive-text: var(--color-destructive-foreground);
-
   --color-badge-warning-bg: var(--color-warning);
   --color-badge-warning-text: var(--color-warning-foreground);
-
   --color-badge-info-bg: var(--color-info);
   --color-badge-info-text: var(--color-info-foreground);
 
   /* ========================================
      INPUT
      ======================================== */
+  --spacing-input-sm: var(--spacing-sm);
+  --spacing-input-md: var(--spacing-md);
+  --spacing-input-lg: var(--spacing-lg);
+  --spacing-input-xl: var(--spacing-xl);
+  --spacing-input-2xl: var(--spacing-2xl);
+  --spacing-input-3xl: var(--spacing-3xl);
 
-  /* Spacing by size */
-  --spacing-input-sm: var(--space-sm);
-  --spacing-input-md: var(--space-md);
-  --spacing-input-lg: var(--space-lg);
-  --spacing-input-xl: var(--space-xl);
-  --spacing-input-2xl: var(--space-2xl);
-  --spacing-input-3xl: var(--space-3xl);
+  /* Width: w-input-sm 등으로 사용하기 위해 --width 접두사 사용 */
+  --width-input-sm: var(--width-input-sm);
+  --width-input-md: var(--width-input-md);
+  --width-input-lg: var(--width-input-lg);
 
-  /* Width by size */
-  --spacing-input-w-sm: var(--size-input-sm);
-  --spacing-input-w-md: var(--size-input-md);
-  --spacing-input-w-lg: var(--size-input-lg);
-
-  /* Font & Radius */
-  --text-input: var(--text-base);
-  --radius-input: var(--rounded-base);
-
-  /* Colors */
+  --radius-input: var(--radius-base);
   --color-input-bg: var(--color-background);
   --color-input-bg-disabled: var(--color-background-disabled);
   --color-input-text: var(--color-input-text);
@@ -152,119 +105,77 @@
   --color-input-border-error: var(--color-border-error);
 
   /* ========================================
-     LABEL
+     LABEL & HELPER
      ======================================== */
-
-  --text-label: var(--text-sm);
   --color-label-text: var(--color-label-text);
   --color-label-required: var(--color-destructive);
-  --spacing-label-sm: var(--space-sm);
-  --spacing-label-md: var(--space-md);
-  --spacing-label-lg: var(--space-lg);
-  --spacing-label-xl: var(--space-xl);
-  --spacing-label-2xl: var(--space-2xl);
-  --spacing-label-3xl: var(--space-3xl);
+  --spacing-label-sm: var(--spacing-sm);
+  --spacing-label-md: var(--spacing-md);
+  --spacing-label-lg: var(--spacing-lg);
+  --spacing-label-xl: var(--spacing-xl);
+  --spacing-label-2xl: var(--spacing-2xl);
+  --spacing-label-3xl: var(--spacing-3xl);
 
-  /* ========================================
-     HELPER TEXT
-     ======================================== */
-
-  --text-helper: var(--text-sm);
   --color-helper-text: var(--color-helper-text);
   --color-helper-error: var(--color-destructive);
-  --spacing-helper-sm: var(--space-sm);
-  --spacing-helper-md: var(--space-md);
-  --spacing-helper-lg: var(--space-lg);
-  --spacing-helper-xl: var(--space-xl);
-  --spacing-helper-2xl: var(--space-2xl);
-  --spacing-helper-3xl: var(--space-3xl);
+  --spacing-helper-sm: var(--spacing-sm);
+  --spacing-helper-md: var(--spacing-md);
+  --spacing-helper-lg: var(--spacing-lg);
+  --spacing-helper-xl: var(--spacing-xl);
+  --spacing-helper-2xl: var(--spacing-2xl);
+  --spacing-helper-3xl: var(--spacing-3xl);
 
   /* ========================================
      CARD
      ======================================== */
+  --spacing-card-sm: var(--spacing-sm);
+  --spacing-card-md: var(--spacing-md);
+  --spacing-card-lg: var(--spacing-lg);
+  --spacing-card-xl: var(--spacing-xl);
+  --spacing-card-2xl: var(--spacing-2xl);
+  --spacing-card-3xl: var(--spacing-3xl);
 
-  /* Spacing by size */
-  --spacing-card-sm: var(--space-sm);
-  --spacing-card-md: var(--space-md);
-  --spacing-card-lg: var(--space-lg);
-  --spacing-card-xl: var(--space-xl);
-  --spacing-card-2xl: var(--space-2xl);
-  --spacing-card-3xl: var(--space-3xl);
-
-  /* Base */
-  --radius-card: var(--rounded-md);
+  --radius-card: var(--radius-md);
   --color-card-bg: var(--color-background);
-
-  /* Border & Shadow */
   --color-card-border: var(--color-border);
   --color-card-border-subtle: var(--color-border-subtle);
   --shadow-card: var(--shadow-sm);
   --shadow-card-elevated: var(--shadow-md);
   --color-card-bg-flat: var(--color-background-subtle);
-
-  /* Header */
   --color-card-header-bg: var(--color-background-subtle);
   --color-card-header-border: var(--color-border-subtle);
 
-  /* Title */
-  --text-card-title: var(--text-xl);
-  --font-card-title: var(--font-medium);
-  --leading-card-title: var(--leading-loose);
   --color-card-title: var(--color-foreground);
-
-  /* Subtitle */
-  --text-card-subtitle: var(--text-base);
-  --leading-card-subtitle: var(--leading-normal);
   --color-card-subtitle: var(--color-foreground-muted);
 
   /* ========================================
      ALERT
      ======================================== */
+  --spacing-alert-sm: var(--spacing-sm);
+  --spacing-alert-md: var(--spacing-md);
+  --spacing-alert-lg: var(--spacing-lg);
+  --spacing-alert-xl: var(--spacing-xl);
+  --spacing-alert-2xl: var(--spacing-2xl);
+  --spacing-alert-3xl: var(--spacing-3xl);
+  --radius-alert: var(--radius-base);
 
-  /* Spacing by size */
-  --spacing-alert-sm: var(--space-sm);
-  --spacing-alert-md: var(--space-md);
-  --spacing-alert-lg: var(--space-lg);
-  --spacing-alert-xl: var(--space-xl);
-  --spacing-alert-2xl: var(--space-2xl);
-  --spacing-alert-3xl: var(--space-3xl);
-  --radius-alert: var(--rounded-base);
-
-  /* Icon */
-  --text-alert-icon: var(--text-2xl);
-
-  /* Title */
-  --text-alert-title: var(--text-md);
-  --font-alert-title: var(--font-bold);
-
-  /* Body */
-  --text-alert-body: var(--text-base);
-  --leading-alert-body: var(--leading-relaxed);
-
-  /* Close Button */
-  --text-alert-close: var(--text-2xl);
-
-  /* Variant: info */
+  /* Alert Color Variants */
   --color-alert-info-bg: var(--color-feedback-info-bg);
   --color-alert-info-border: var(--color-feedback-info-border);
   --color-alert-info-text: var(--color-feedback-info-text);
 
-  /* Variant: success */
   --color-alert-success-bg: var(--color-feedback-success-bg);
   --color-alert-success-border: var(--color-feedback-success-border);
   --color-alert-success-text: var(--color-feedback-success-text);
 
-  /* Variant: warning */
   --color-alert-warning-bg: var(--color-feedback-warning-bg);
   --color-alert-warning-border: var(--color-feedback-warning-border);
   --color-alert-warning-text: var(--color-feedback-warning-text);
 
-  /* Variant: destructive */
   --color-alert-destructive-bg: var(--color-feedback-error-bg);
   --color-alert-destructive-border: var(--color-feedback-error-border);
   --color-alert-destructive-text: var(--color-feedback-error-text);
 
-  /* Variant: default */
   --color-alert-default-bg: var(--color-feedback-default-bg);
   --color-alert-default-border: var(--color-feedback-default-border);
   --color-alert-default-text: var(--color-feedback-default-text);
@@ -272,75 +183,48 @@
   /* ========================================
      MODAL
      ======================================== */
+  --spacing-modal-sm: var(--spacing-sm);
+  --spacing-modal-md: var(--spacing-md);
+  --spacing-modal-lg: var(--spacing-lg);
+  --spacing-modal-xl: var(--spacing-xl);
+  --spacing-modal-2xl: var(--spacing-2xl);
+  --spacing-modal-3xl: var(--spacing-3xl);
 
-  /* Spacing by size */
-  --spacing-modal-sm: var(--space-sm);
-  --spacing-modal-md: var(--space-md);
-  --spacing-modal-lg: var(--space-lg);
-  --spacing-modal-xl: var(--space-xl);
-  --spacing-modal-2xl: var(--space-2xl);
-  --spacing-modal-3xl: var(--space-3xl);
+  /* Width: w-modal-lg 등으로 사용 */
+  --width-modal-sm: var(--width-modal-sm);
+  --width-modal-md: var(--width-modal-md);
+  --width-modal-lg: var(--width-modal-lg);
 
-  /* Width by size */
-  --spacing-modal-w-sm: var(--size-modal-sm);
-  --spacing-modal-w-md: var(--size-modal-md);
-  --spacing-modal-w-lg: var(--size-modal-lg);
-
-  /* Overlay */
   --color-modal-overlay: var(--color-overlay);
-
-  /* Content */
   --color-modal-bg: var(--color-background);
-  --radius-modal: var(--rounded-md);
+  --radius-modal: var(--radius-md);
   --shadow-modal: var(--shadow-lg);
-
-  /* Header */
   --color-modal-header-border: var(--color-border);
-
-  /* Title */
-  --text-modal-title: var(--text-xl);
-  --font-modal-title: var(--font-medium);
+  --color-modal-footer-border: var(--color-border);
   --color-modal-title: var(--color-foreground);
 
-  /* Close Button */
-  --text-modal-close: var(--text-3xl);
-  --size-modal-close: var(--size-icon-md);
+  /* Close Button (w-modal-close로 사용) */
+  --width-modal-close: var(--width-icon-md);
   --color-modal-close: var(--color-foreground-subtle);
   --color-modal-close-hover: var(--color-hover-overlay);
-  --radius-modal-close: var(--rounded-full);
-
-  /* Footer */
-  --color-modal-footer-border: var(--color-border);
+  --radius-modal-close: var(--radius-full);
 
   /* ========================================
      TABLE
      ======================================== */
+  --spacing-table-sm: var(--spacing-sm);
+  --spacing-table-md: var(--spacing-md);
+  --spacing-table-lg: var(--spacing-lg);
+  --spacing-table-xl: var(--spacing-xl);
+  --spacing-table-2xl: var(--spacing-2xl);
+  --spacing-table-3xl: var(--spacing-3xl);
 
-  /* Spacing by size */
-  --spacing-table-sm: var(--space-sm);
-  --spacing-table-md: var(--space-md);
-  --spacing-table-lg: var(--space-lg);
-  --spacing-table-xl: var(--space-xl);
-  --spacing-table-2xl: var(--space-2xl);
-  --spacing-table-3xl: var(--space-3xl);
-
-  /* Base */
-  --text-table: var(--text-base);
   --color-table-bg: var(--color-background);
-
-  /* Header */
   --color-table-header-bg: var(--color-background-subtle);
-  --text-table-header: var(--text-sm);
-  --font-table-header: var(--font-medium);
-  --tracking-table-header: var(--tracking-wide);
   --color-table-header-text: var(--color-foreground-muted);
   --color-table-header-border: var(--color-border);
-
-  /* Cell */
   --color-table-cell-text: var(--color-foreground);
   --color-table-cell-border: var(--color-border-subtle);
-
-  /* Striped & Hover */
   --color-table-striped-bg: var(--color-background-subtle);
   --color-table-hover-bg: var(--color-hover-overlay);
   --color-table-bordered-border: var(--color-border);
@@ -348,53 +232,38 @@
   /* ========================================
      CHECKBOX
      ======================================== */
+  --spacing-checkbox-sm: var(--spacing-sm);
+  --spacing-checkbox-md: var(--spacing-md);
+  --spacing-checkbox-lg: var(--spacing-lg);
+  --spacing-checkbox-xl: var(--spacing-xl);
+  --spacing-checkbox-2xl: var(--spacing-2xl);
+  --spacing-checkbox-3xl: var(--spacing-3xl);
 
-  /* Spacing by size */
-  --spacing-checkbox-sm: var(--space-sm);
-  --spacing-checkbox-md: var(--space-md);
-  --spacing-checkbox-lg: var(--space-lg);
-  --spacing-checkbox-xl: var(--space-xl);
-  --spacing-checkbox-2xl: var(--space-2xl);
-  --spacing-checkbox-3xl: var(--space-3xl);
+  /* Size: w-checkbox 사용 시 Semantic Icon Size 적용 */
+  --width-checkbox: var(--width-icon-sm);
 
-  /* Box Size */
-  --size-checkbox: var(--size-icon-sm);
-
-  /* Base */
-  --radius-checkbox: var(--rounded-sm);
+  --radius-checkbox: var(--radius-sm);
   --color-checkbox-border: var(--color-checkbox-border);
   --color-checkbox-bg: var(--color-background);
   --color-checkbox-bg-checked: var(--color-primary);
   --color-checkbox-border-checked: var(--color-primary);
   --color-checkbox-checkmark: var(--color-white);
-  --text-checkbox-checkmark: var(--text-xs);
 
-  /* Label */
-  --text-checkbox-label: var(--text-base);
-  --leading-checkbox-label: var(--leading-snug);
   --color-checkbox-label: var(--color-checkbox-label);
   --color-checkbox-label-error: var(--color-red-500);
-
-  /* Hint */
-  --text-checkbox-hint: var(--text-sm);
   --color-checkbox-hint: var(--color-checkbox-hint);
 
   /* ========================================
-     TEXTAREA
+     TEXTAREA & FORM GROUP
      ======================================== */
+  --spacing-textarea-sm: var(--spacing-sm);
+  --spacing-textarea-md: var(--spacing-md);
+  --spacing-textarea-lg: var(--spacing-lg);
+  --spacing-textarea-xl: var(--spacing-xl);
+  --spacing-textarea-2xl: var(--spacing-2xl);
+  --spacing-textarea-3xl: var(--spacing-3xl);
 
-  /* Spacing by size */
-  --spacing-textarea-sm: var(--space-sm);
-  --spacing-textarea-md: var(--space-md);
-  --spacing-textarea-lg: var(--space-lg);
-  --spacing-textarea-xl: var(--space-xl);
-  --spacing-textarea-2xl: var(--space-2xl);
-  --spacing-textarea-3xl: var(--space-3xl);
-
-  /* Base */
-  --text-textarea: var(--text-lg);
-  --leading-textarea: var(--leading-tight);
-  --radius-textarea: var(--rounded-md);
+  --radius-textarea: var(--radius-md);
   --color-textarea-border: var(--color-textarea-border);
   --color-textarea-border-focus: var(--color-border-focus);
   --color-textarea-border-error: var(--color-border-error);
@@ -402,14 +271,181 @@
   --color-textarea-bg-disabled: var(--color-textarea-bg-disabled);
   --color-textarea-text: var(--color-foreground);
 
-  /* ========================================
-     FORM GROUP
-     ======================================== */
+  --spacing-form-group-sm: var(--spacing-sm);
+  --spacing-form-group-md: var(--spacing-md);
+  --spacing-form-group-lg: var(--spacing-lg);
+  --spacing-form-group-xl: var(--spacing-xl);
+  --spacing-form-group-2xl: var(--spacing-2xl);
+  --spacing-form-group-3xl: var(--spacing-3xl);
+}
 
-  --spacing-form-group-sm: var(--space-sm);
-  --spacing-form-group-md: var(--space-md);
-  --spacing-form-group-lg: var(--space-lg);
-  --spacing-form-group-xl: var(--space-xl);
-  --spacing-form-group-2xl: var(--space-2xl);
-  --spacing-form-group-3xl: var(--space-3xl);
+/* 2. 컴포넌트 전용 타이포그래피 유틸리티 (@utility)
+  - 기존: --text-card-title, --leading-card-title 등 변수 파편화
+  - 변경: @utility text-card-title {...} 하나로 통합
+  - 효과: 개발자는 text-card-title 클래스만 사용하면 폰트크기, 행간, 굵기 자동 적용
+*/
+
+/* Button Text */
+@utility text-btn-sm {
+  font-size: var(--text-sm);
+  line-height: var(--leading-relaxed);
+  font-weight: var(--font-medium);
+}
+@utility text-btn-md {
+  font-size: var(--text-base);
+  line-height: var(--leading-relaxed);
+  font-weight: var(--font-medium);
+}
+@utility text-btn-lg {
+  font-size: var(--text-md);
+  line-height: var(--leading-relaxed);
+  font-weight: var(--font-medium);
+}
+
+/* Badge Text */
+@utility text-badge-sm {
+  font-size: var(--text-xs);
+  line-height: var(--leading-none);
+  font-weight: var(--font-bold);
+}
+@utility text-badge-md {
+  font-size: var(--text-sm);
+  line-height: var(--leading-none);
+  font-weight: var(--font-bold);
+}
+@utility text-badge-lg {
+  font-size: var(--text-sm);
+  line-height: var(--leading-none);
+  font-weight: var(--font-bold);
+}
+
+/* Input Text */
+@utility text-input {
+  font-size: var(--text-base);
+  line-height: var(--leading-normal);
+  font-weight: var(--font-normal);
+}
+
+/* Label & Helper */
+@utility text-label {
+  font-size: var(--text-sm);
+  line-height: var(--leading-snug);
+  font-weight: var(--font-medium);
+}
+@utility text-helper {
+  font-size: var(--text-sm);
+  line-height: var(--leading-normal);
+  font-weight: var(--font-normal);
+}
+
+/* Card Text */
+@utility text-card-title {
+  font-size: var(--text-xl);
+  line-height: var(--leading-loose);
+  font-weight: var(--font-medium);
+}
+@utility text-card-subtitle {
+  font-size: var(--text-base);
+  line-height: var(--leading-normal);
+  font-weight: var(--font-normal);
+}
+
+/* Alert Text */
+@utility text-alert-title {
+  font-size: var(--text-md);
+  line-height: var(--leading-snug);
+  font-weight: var(--font-bold);
+}
+@utility text-alert-body {
+  font-size: var(--text-base);
+  line-height: var(--leading-relaxed);
+  font-weight: var(--font-normal);
+}
+@utility text-alert-icon {
+  font-size: var(--text-2xl);
+  line-height: 1; /* 아이콘은 보통 tight하게 */
+}
+@utility text-alert-close {
+  font-size: var(--text-2xl);
+  line-height: 1;
+}
+
+/* Modal Text */
+@utility text-modal-title {
+  font-size: var(--text-xl);
+  line-height: var(--leading-snug);
+  font-weight: var(--font-medium);
+}
+@utility text-modal-close {
+  font-size: var(--text-3xl);
+  line-height: 1;
+}
+
+/* Table Text */
+@utility text-table-header {
+  font-size: var(--text-sm);
+  line-height: var(--leading-normal);
+  font-weight: var(--font-medium);
+  letter-spacing: var(--tracking-wide);
+}
+@utility text-table-cell {
+  font-size: var(--text-base);
+  line-height: var(--leading-normal);
+  font-weight: var(--font-normal);
+}
+
+/* Checkbox Text */
+@utility text-checkbox-label {
+  font-size: var(--text-base);
+  line-height: var(--leading-snug);
+  font-weight: var(--font-normal);
+}
+@utility text-checkbox-hint {
+  font-size: var(--text-sm);
+  line-height: var(--leading-normal);
+  font-weight: var(--font-normal);
+}
+@utility text-checkbox-checkmark {
+  font-size: var(--text-xs);
+  line-height: 1;
+}
+
+/* Textarea Text */
+@utility text-textarea {
+  font-size: var(--text-lg);
+  line-height: var(--leading-tight);
+  font-weight: var(--font-normal);
+}
+
+/* 버튼 utilities 테스트 */
+
+@utility padding-btn-sm {
+  padding-block: var(--spacing-6); /* 상하 6px */
+  padding-inline: var(--spacing-12); /* 좌우 12px */
+}
+
+@utility padding-btn-md {
+  padding-block: var(--spacing-10); /* 상하 10px */
+  padding-inline: var(--spacing-20); /* 좌우 20px */
+}
+
+@utility padding-btn-lg {
+  padding-block: var(--spacing-12); /* 상하 12px */
+  padding-inline: var(--spacing-24); /* 좌우 24px */
+}
+
+@utility typo-btn-sm {
+  font-size: var(--text-sm);
+  line-height: var(--leading-relaxed);
+  font-weight: var(--font-normal);
+}
+@utility typo-btn-md {
+  font-size: var(--text-base);
+  line-height: var(--leading-relaxed);
+  font-weight: var(--font-normal);
+}
+@utility typo-btn-lg {
+  font-size: var(--text-md);
+  line-height: var(--leading-relaxed);
+  font-weight: var(--font-normal);
 }
