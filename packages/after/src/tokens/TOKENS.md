@@ -7,13 +7,16 @@ Tailwind CSS v4 기반 디자인 토큰 시스템 완벽 가이드
 ## 목차
 
 1. [시스템 개요](#시스템-개요)
-2. [Tailwind v4 네임스페이스 규칙](#tailwind-v4-네임스페이스-규칙)
-3. [Primitive Tokens](#primitive-tokens)
-4. [Semantic Tokens](#semantic-tokens)
-5. [Component Tokens](#component-tokens)
-6. [사용 예시](#사용-예시)
-7. [shadcn/ui 통합](#shadcnui-통합)
+2. [Tailwind CSS v4 핵심 개념](#tailwind-css-v4-핵심-개념)
+3. [토큰 체이닝 아키텍처](#토큰-체이닝-아키텍처)
+4. [Tailwind v4 네임스페이스 규칙](#tailwind-v4-네임스페이스-규칙)
+5. [Primitive Tokens](#primitive-tokens)
+6. [Semantic Tokens](#semantic-tokens)
+7. [Component Tokens](#component-tokens)
 8. [다크 모드](#다크-모드)
+9. [사용 예시](#사용-예시)
+10. [shadcn/ui 통합](#shadcnui-통합)
+11. [마이그레이션 가이드](#마이그레이션-가이드)
 
 ---
 
@@ -22,11 +25,25 @@ Tailwind CSS v4 기반 디자인 토큰 시스템 완벽 가이드
 ### 토큰 계층 구조
 
 ```
-Primitive (순수값)
-    ↓
-Semantic (의미 기반)
-    ↓
-Component (컴포넌트별)
+┌─────────────────────────────────────────────────────────────┐
+│                    Primitive Tokens                         │
+│              (순수 값: #ffffff, 8px, 400 등)                 │
+│                      @theme { }                             │
+└──────────────────────────┬──────────────────────────────────┘
+                           │ 참조
+                           ▼
+┌─────────────────────────────────────────────────────────────┐
+│                    Semantic Tokens                          │
+│          (의미 기반: primary, background, border 등)         │
+│                   @theme inline { }                         │
+└──────────────────────────┬──────────────────────────────────┘
+                           │ 참조
+                           ▼
+┌─────────────────────────────────────────────────────────────┐
+│                   Component Tokens                          │
+│           (컴포넌트별: btn-primary-bg, card-border 등)       │
+│                   @theme inline { }                         │
+└─────────────────────────────────────────────────────────────┘
 ```
 
 ### 파일 구조
@@ -34,7 +51,7 @@ Component (컴포넌트별)
 ```
 src/tokens/
 ├── index.css         # 진입점 (이 파일만 import)
-├── primitive.css     # Primitive 토큰 (@theme)
+├── primitive.css     # Primitive 토큰 (@theme) + 동적 변수 (:root/.dark)
 ├── semantic.css      # Semantic 토큰 (@theme inline)
 ├── components.css    # Component 토큰 (@theme inline)
 └── TOKENS.md         # 이 문서
@@ -45,6 +62,285 @@ src/tokens/
 ```tsx
 // App.tsx 또는 main.tsx
 import '@/tokens/index.css';
+```
+
+---
+
+## Tailwind CSS v4 핵심 개념
+
+### 제로 런타임(Zero Runtime)이란?
+
+Tailwind CSS는 **제로 런타임** 프레임워크입니다.
+
+```
+CSS-in-JS (styled-components, emotion)
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+브라우저 로드 → JS 실행 → 스타일 생성 → DOM 주입
+                 ↑
+            런타임 비용 발생 (JS 번들 + 실행 시간)
+
+
+Tailwind CSS (제로 런타임)
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+빌드 시 → 정적 CSS 파일 생성
+브라우저 로드 → CSS 파일 적용 (끝)
+                 ↑
+            JS 실행 없음 = 제로 런타임
+```
+
+**핵심 포인트:**
+- **제로 런타임** = 브라우저에서 JavaScript가 스타일을 생성하지 않음
+- **CSS 변수**(`var(--something)`)는 CSS의 네이티브 기능이므로 런타임과 무관
+- 두 개념은 충돌하지 않음 → Tailwind는 제로 런타임이면서 CSS 변수 기반 다크모드 지원
+
+---
+
+### @theme vs @theme inline
+
+Tailwind CSS v4에서 가장 중요한 두 가지 지시어입니다.
+
+#### @theme (표준)
+
+`@theme` 안에 정의된 변수는 Tailwind가 유틸리티 클래스를 생성하고, **변수명 자체**를 참조합니다.
+
+```css
+@theme {
+  --color-primary: #1976d2;
+}
+```
+
+**컴파일 결과:**
+```css
+:root {
+  --color-primary: #1976d2;
+}
+
+.bg-primary {
+  background: var(--color-primary);  /* 변수명 참조 */
+}
+```
+
+#### @theme inline
+
+`@theme inline` 안에 정의된 변수는 **정의한 값**을 직접 인라인합니다.
+
+```css
+@theme inline {
+  --color-background: var(--raw-background);
+}
+```
+
+**컴파일 결과:**
+```css
+/* :root에 --color-background 생성 안 됨! */
+
+.bg-background {
+  background: var(--raw-background);  /* 값이 인라인됨 */
+}
+```
+
+#### 핵심 차이점 비교
+
+| 구분 | `@theme` | `@theme inline` |
+|------|----------|-----------------|
+| CSS 변수 생성 | `:root`에 생성됨 | 생성 안 됨 |
+| 유틸리티 출력 | `var(--변수명)` | 정의한 값 그대로 |
+| 용도 | 정적 값 정의 | 다른 변수 참조 시 |
+| 다크모드 | 변수 재정의 필요 | 참조하는 원본 변수만 변경 |
+
+#### 그림으로 이해하기
+
+```
+@theme (변수명 참조)
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+정의: --color-background: var(--raw-background)
+                              │
+출력: .bg-background { background: var(--color-background) }
+                                         ↑
+                               중간 변수를 참조 (문제 발생 가능)
+
+
+@theme inline (값 직접 사용)
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+정의: --color-background: var(--raw-background)
+                              │
+출력: .bg-background { background: var(--raw-background) }
+                                         ↑
+                               값이 직접 인라인됨 (다크모드 작동!)
+```
+
+---
+
+### :root와 동적 변수
+
+#### 정적 변수 vs 동적 변수
+
+| 구분 | 정의 위치 | Tailwind 처리 | 런타임 변경 |
+|------|----------|---------------|-------------|
+| **정적 변수** | `@theme { }` 안 | 컴파일 시 처리 | 불가능 |
+| **동적 변수** | `@theme` 바깥 (`:root`, `.dark`) | 그대로 출력 | 가능 |
+
+#### 왜 :root가 필요한가?
+
+다크모드처럼 **런타임에 값이 변경**되어야 하는 경우, `@theme` 바깥에서 정의해야 합니다.
+
+```css
+/* primitive.css */
+
+/* 정적 변수 - Tailwind가 컴파일 시 처리 */
+@theme {
+  --color-white: #ffffff;
+  --color-gray-800: #333333;
+}
+
+/* 동적 변수 - 런타임에 변경 가능 */
+:root {
+  --raw-background: var(--color-white);
+}
+
+.dark {
+  --raw-background: var(--color-gray-800);
+}
+```
+
+```css
+/* semantic.css */
+@theme inline {
+  --color-background: var(--raw-background);
+}
+```
+
+**컴파일 결과:**
+```css
+.bg-background {
+  background: var(--raw-background);
+}
+```
+
+`.dark` 클래스가 적용되면 `--raw-background` 값이 변경되어 다크모드가 작동합니다.
+
+---
+
+### @theme에서 var() 참조 시 문제점
+
+`@theme`에서 다른 CSS 변수를 참조하면 **스코프 문제**가 발생합니다.
+
+```css
+/* 문제가 되는 패턴 */
+@theme {
+  --color-background: var(--raw-background);
+}
+
+/* 출력 */
+:root {
+  --color-background: var(--raw-background);
+}
+
+.bg-background {
+  background: var(--color-background);  /* 중간 변수 참조 */
+}
+```
+
+**문제:**
+```
+.bg-background → var(--color-background) 해석
+                 ↓
+--color-background → :root에서 정의됨 → var(--raw-background)
+                     ↓
+var(--raw-background) → :root 스코프에서 해석 (white)
+                        ↑
+                   .dark 스코프가 아님!
+```
+
+CSS 변수는 **정의된 위치**에서 해석되므로, `.dark`의 변경이 반영되지 않습니다.
+
+**해결책: @theme inline 사용**
+```css
+@theme inline {
+  --color-background: var(--raw-background);
+}
+
+/* 출력 - 중간 변수 없이 직접 참조 */
+.bg-background {
+  background: var(--raw-background);
+}
+```
+
+---
+
+## 토큰 체이닝 아키텍처
+
+### 전체 흐름
+
+```
+┌─────────────────────────────────────────────────────────────────┐
+│                      primitive.css                              │
+├─────────────────────────────────────────────────────────────────┤
+│                                                                 │
+│  @theme {                                                       │
+│    --color-white: #ffffff;      ← 정적 값                       │
+│    --color-gray-800: #333333;                                   │
+│  }                                                              │
+│                                                                 │
+│  :root {                                                        │
+│    --raw-background: var(--color-white);    ← 동적 변수 (Light) │
+│  }                                                              │
+│                                                                 │
+│  .dark {                                                        │
+│    --raw-background: var(--color-gray-800); ← 동적 변수 (Dark)  │
+│  }                                                              │
+│                                                                 │
+└──────────────────────────┬──────────────────────────────────────┘
+                           │
+                           ▼
+┌─────────────────────────────────────────────────────────────────┐
+│                      semantic.css                               │
+├─────────────────────────────────────────────────────────────────┤
+│                                                                 │
+│  @theme inline {                                                │
+│    --color-background: var(--raw-background);                   │
+│  }                     ↑                                        │
+│                        │                                        │
+│                   동적 변수 참조 → 다크모드 자동 적용              │
+│                                                                 │
+└──────────────────────────┬──────────────────────────────────────┘
+                           │
+                           ▼
+┌─────────────────────────────────────────────────────────────────┐
+│                     components.css                              │
+├─────────────────────────────────────────────────────────────────┤
+│                                                                 │
+│  @theme inline {                                                │
+│    --color-card-bg: var(--color-background);                    │
+│  }                     ↑                                        │
+│                        │                                        │
+│                   semantic 토큰 참조                             │
+│                                                                 │
+└─────────────────────────────────────────────────────────────────┘
+```
+
+### 빌드 타임 vs 런타임
+
+```
+빌드 타임 (Tailwind 컴파일)
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+@theme { --color-white: #fff }
+@theme inline { --color-background: var(--raw-background) }
+                        │
+                        ▼
+.bg-background { background: var(--raw-background) }
+                        │
+                정적 CSS 파일 생성 (JS 없음)
+
+
+브라우저 런타임 (CSS cascade)
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+:root { --raw-background: white }    ← 기본값
+.dark { --raw-background: black }    ← 오버라이드
+
+<body class="dark">
+  └─ --raw-background = black (CSS cascade)
+     └─ .bg-background → background: black
 ```
 
 ---
@@ -94,14 +390,16 @@ Tailwind CSS v4에서는 CSS 변수의 **네임스페이스**가 자동으로 �
 
 순수 값만 정의하며 의미(semantic)를 포함하지 않습니다.
 
-### Colors - Solid
+### 정적 토큰 (@theme)
+
+#### Colors - Solid
 
 | CSS 변수 | 값 | 생성 클래스 |
 |---------|-----|-----------|
 | `--color-white` | `#ffffff` | `bg-white`, `text-white`, `border-white` |
 | `--color-black` | `#000000` | `bg-black`, `text-black`, `border-black` |
 
-#### Gray Scale
+##### Gray Scale
 
 | CSS 변수 | 값 | 생성 클래스 |
 |---------|-----|-----------|
@@ -118,7 +416,7 @@ Tailwind CSS v4에서는 CSS 변수의 **네임스페이스**가 자동으로 �
 | `--color-gray-750` | `#374151` | `bg-gray-750`, `text-gray-750` |
 | `--color-gray-800` | `#333333` | `bg-gray-800`, `text-gray-800` |
 
-#### Blue Scale
+##### Blue Scale
 
 | CSS 변수 | 값 | 생성 클래스 |
 |---------|-----|-----------|
@@ -129,7 +427,7 @@ Tailwind CSS v4에서는 CSS 변수의 **네임스페이스**가 자동으로 �
 | `--color-blue-700` | `#0288d1` | `bg-blue-700`, `text-blue-700` |
 | `--color-blue-900` | `#0d47a1` | `bg-blue-900`, `text-blue-900` |
 
-#### Red Scale
+##### Red Scale
 
 | CSS 변수 | 값 | 생성 클래스 |
 |---------|-----|-----------|
@@ -140,7 +438,7 @@ Tailwind CSS v4에서는 CSS 변수의 **네임스페이스**가 자동으로 �
 | `--color-red-700` | `#c62828` | `bg-red-700`, `text-red-700` |
 | `--color-red-900` | `#b71c1c` | `bg-red-900`, `text-red-900` |
 
-#### Green Scale
+##### Green Scale
 
 | CSS 변수 | 값 | 생성 클래스 |
 |---------|-----|-----------|
@@ -150,7 +448,7 @@ Tailwind CSS v4에서는 CSS 변수의 **네임스페이스**가 자동으로 �
 | `--color-green-700` | `#2e7d32` | `bg-green-700`, `text-green-700` |
 | `--color-green-900` | `#1b5e20` | `bg-green-900`, `text-green-900` |
 
-#### Orange Scale
+##### Orange Scale
 
 | CSS 변수 | 값 | 생성 클래스 |
 |---------|-----|-----------|
@@ -159,7 +457,7 @@ Tailwind CSS v4에서는 CSS 변수의 **네임스페이스**가 자동으로 �
 | `--color-orange-600` | `#f57c00` | `bg-orange-600`, `text-orange-600` |
 | `--color-orange-800` | `#e65100` | `bg-orange-800`, `text-orange-800` |
 
-### Colors - Alpha (투명도)
+#### Colors - Alpha (투명도)
 
 | CSS 변수 | 값 | 용도 |
 |---------|-----|------|
@@ -174,7 +472,7 @@ Tailwind CSS v4에서는 CSS 변수의 **네임스페이스**가 자동으로 �
 | `--color-black-a60` | `rgba(0,0,0,0.6)` | muted text |
 | `--color-black-a87` | `rgba(0,0,0,0.87)` | primary text |
 
-### Spacing
+#### Spacing
 
 | CSS 변수 | 값 | 생성 클래스 (예시) |
 |---------|-----|------------------|
@@ -191,7 +489,7 @@ Tailwind CSS v4에서는 CSS 변수의 **네임스페이스**가 자동으로 �
 | `--spacing-24` | `24px` | `p-24`, `m-24`, `gap-24` |
 | `--spacing-32` | `32px` | `p-32`, `m-32`, `gap-32` |
 
-### Font Size
+#### Font Size
 
 | CSS 변수 | 값 | Semantic 토큰에서 참조 |
 |---------|-----|---------------------|
@@ -205,7 +503,7 @@ Tailwind CSS v4에서는 CSS 변수의 **네임스페이스**가 자동으로 �
 | `--font-size-20` | `20px` | `--text-2xl` |
 | `--font-size-28` | `28px` | `--text-3xl` |
 
-### Font Weight
+#### Font Weight
 
 | CSS 변수 | 값 | Semantic 토큰 |
 |---------|-----|-------------|
@@ -213,7 +511,7 @@ Tailwind CSS v4에서는 CSS 변수의 **네임스페이스**가 자동으로 �
 | `--font-weight-500` | `500` | `--font-medium` |
 | `--font-weight-700` | `700` | `--font-bold` |
 
-### Line Height
+#### Line Height
 
 | CSS 변수 | 값 | Semantic 토큰 |
 |---------|-----|-------------|
@@ -224,13 +522,13 @@ Tailwind CSS v4에서는 CSS 변수의 **네임스페이스**가 자동으로 �
 | `--line-height-1-5` | `1.5` | `--leading-relaxed` |
 | `--line-height-1-6` | `1.6` | `--leading-loose` |
 
-### Letter Spacing
+#### Letter Spacing
 
 | CSS 변수 | 값 | Semantic 토큰 |
 |---------|-----|-------------|
 | `--letter-spacing-wide` | `0.03em` | `--tracking-wide` |
 
-### Border Radius
+#### Border Radius
 
 | CSS 변수 | 값 | Semantic 토큰 |
 |---------|-----|-------------|
@@ -241,7 +539,7 @@ Tailwind CSS v4에서는 CSS 변수의 **네임스페이스**가 자동으로 �
 | `--radius-10` | `10px` | `--rounded-lg` |
 | `--radius-full` | `9999px` | `--rounded-full` |
 
-### Width
+#### Width
 
 | CSS 변수 | 값 | 용도 |
 |---------|-----|------|
@@ -253,7 +551,7 @@ Tailwind CSS v4에서는 CSS 변수의 **네임스페이스**가 자동으로 �
 | `--width-600` | `600px` | modal-md |
 | `--width-900` | `900px` | modal-lg |
 
-### Z-Index
+#### Z-Index
 
 | CSS 변수 | 값 | Semantic 토큰 |
 |---------|-----|-------------|
@@ -262,7 +560,7 @@ Tailwind CSS v4에서는 CSS 변수의 **네임스페이스**가 자동으로 �
 | `--z-100` | `100` | `--z-sticky` |
 | `--z-1000` | `1000` | `--z-modal` |
 
-### Opacity
+#### Opacity
 
 | CSS 변수 | 값 | 생성 클래스 |
 |---------|-----|-----------|
@@ -270,7 +568,7 @@ Tailwind CSS v4에서는 CSS 변수의 **네임스페이스**가 자동으로 �
 | `--opacity-60` | `0.6` | `opacity-60` |
 | `--opacity-100` | `1` | `opacity-100` |
 
-### Duration
+#### Duration
 
 | CSS 변수 | 값 | Semantic 토큰 |
 |---------|-----|-------------|
@@ -278,7 +576,7 @@ Tailwind CSS v4에서는 CSS 변수의 **네임스페이스**가 자동으로 �
 | `--duration-200` | `200ms` | `--duration-normal` |
 | `--duration-1400` | `1400ms` | `--duration-slow` |
 
-### Shadow
+#### Shadow
 
 | CSS 변수 | 값 | Semantic 토큰 |
 |---------|-----|-------------|
@@ -286,7 +584,7 @@ Tailwind CSS v4에서는 CSS 변수의 **네임스페이스**가 자동으로 �
 | `--shadow-2` | Material Design elevation 2 | `--shadow-md` |
 | `--shadow-3` | Material Design elevation 3 | `--shadow-lg` |
 
-### Font Family
+#### Font Family
 
 | CSS 변수 | 값 |
 |---------|-----|
@@ -295,9 +593,61 @@ Tailwind CSS v4에서는 CSS 변수의 **네임스페이스**가 자동으로 �
 
 ---
 
+### 동적 토큰 (:root / .dark)
+
+다크모드 지원을 위한 동적 변수입니다. `@theme` 바깥에서 정의됩니다.
+
+#### Light Mode (:root)
+
+| CSS 변수 | 참조값 | 용도 |
+|---------|-------|------|
+| `--raw-background` | `--color-white` | 기본 배경 |
+| `--raw-background-subtle` | `--color-gray-50` | 약간 어두운 배경 |
+| `--raw-background-muted` | `--color-gray-100` | 음소거된 배경 |
+| `--raw-background-disabled` | `--color-gray-100` | 비활성화 배경 |
+| `--raw-foreground` | `--color-black-a87` | 기본 텍스트 |
+| `--raw-foreground-muted` | `--color-black-a60` | 보조 텍스트 |
+| `--raw-foreground-subtle` | `--color-black-a54` | 힌트 텍스트 |
+| `--raw-border` | `--color-black-a12` | 기본 테두리 |
+| `--raw-border-subtle` | `--color-black-a8` | 약한 테두리 |
+| `--raw-border-input` | `--color-gray-350` | Input 테두리 |
+| `--raw-input-text` | `--color-black` | Input 텍스트 |
+| `--raw-label-text` | `--color-gray-800` | Label 텍스트 |
+| `--raw-helper-text` | `--color-gray-600` | Helper 텍스트 |
+| `--raw-checkbox-border` | `--color-gray-300` | Checkbox 테두리 |
+| `--raw-checkbox-label` | `--color-gray-750` | Checkbox 라벨 |
+| `--raw-checkbox-hint` | `--color-gray-550` | Checkbox 힌트 |
+| `--raw-textarea-border` | `--color-black-a23` | Textarea 테두리 |
+| `--raw-textarea-bg-disabled` | `--color-black-a12` | Textarea 비활성화 배경 |
+
+#### Dark Mode (.dark)
+
+| CSS 변수 | 참조값 | 용도 |
+|---------|-------|------|
+| `--raw-background` | `--color-gray-800` | 다크 배경 |
+| `--raw-background-subtle` | `--color-gray-700` | 약간 밝은 배경 |
+| `--raw-background-muted` | `--color-gray-700` | 음소거된 배경 |
+| `--raw-background-disabled` | `--color-gray-600` | 비활성화 배경 |
+| `--raw-foreground` | `--color-white` | 기본 텍스트 |
+| `--raw-foreground-muted` | `--color-gray-300` | 보조 텍스트 |
+| `--raw-foreground-subtle` | `--color-gray-400` | 힌트 텍스트 |
+| `--raw-border` | `--color-gray-600` | 기본 테두리 |
+| `--raw-border-subtle` | `--color-gray-700` | 약한 테두리 |
+| `--raw-border-input` | `--color-gray-500` | Input 테두리 |
+| `--raw-input-text` | `--color-white` | Input 텍스트 |
+| `--raw-label-text` | `--color-gray-200` | Label 텍스트 |
+| `--raw-helper-text` | `--color-gray-400` | Helper 텍스트 |
+| `--raw-checkbox-border` | `--color-gray-500` | Checkbox 테두리 |
+| `--raw-checkbox-label` | `--color-gray-200` | Checkbox 라벨 |
+| `--raw-checkbox-hint` | `--color-gray-400` | Checkbox 힌트 |
+| `--raw-textarea-border` | `--color-gray-500` | Textarea 테두리 |
+| `--raw-textarea-bg-disabled` | `--color-gray-700` | Textarea 비활성화 배경 |
+
+---
+
 ## Semantic Tokens
 
-의미와 용도 기반으로 정의된 토큰입니다. Primitive 토큰을 참조합니다.
+의미와 용도 기반으로 정의된 토큰입니다. `@theme inline`을 사용하여 동적 변수를 참조합니다.
 
 ### Colors - Intent Based
 
@@ -348,23 +698,23 @@ Tailwind CSS v4에서는 CSS 변수의 **네임스페이스**가 자동으로 �
 | `--color-info` | `--color-blue-700` | `bg-info`, `text-info` |
 | `--color-info-foreground` | `--color-white` | `text-info-foreground` |
 
-### Colors - Surface (배경)
+### Colors - Surface (배경) - 다크모드 지원
 
-| CSS 변수 | 참조값 | 용도 |
-|---------|-------|------|
-| `--color-background` | `--color-white` | 기본 배경 |
-| `--color-background-subtle` | `--color-gray-50` | 약간 어두운 배경 |
-| `--color-background-muted` | `--color-gray-100` | 음소거된 배경 |
-| `--color-background-disabled` | `--color-gray-100` | 비활성화 배경 |
+| CSS 변수 | 참조값 | 용도 | 다크모드 |
+|---------|-------|------|---------|
+| `--color-background` | `--raw-background` | 기본 배경 | ✅ |
+| `--color-background-subtle` | `--raw-background-subtle` | 약간 어두운 배경 | ✅ |
+| `--color-background-muted` | `--raw-background-muted` | 음소거된 배경 | ✅ |
+| `--color-background-disabled` | `--raw-background-disabled` | 비활성화 배경 | ✅ |
 
-### Colors - Foreground (텍스트)
+### Colors - Foreground (텍스트) - 다크모드 지원
 
-| CSS 변수 | 참조값 | 용도 |
-|---------|-------|------|
-| `--color-foreground` | `--color-black-a87` | 기본 텍스트 |
-| `--color-foreground-muted` | `--color-black-a60` | 보조 텍스트 |
-| `--color-foreground-subtle` | `--color-black-a54` | 힌트 텍스트 |
-| `--color-foreground-disabled` | `--color-gray-600` | 비활성화 텍스트 |
+| CSS 변수 | 참조값 | 용도 | 다크모드 |
+|---------|-------|------|---------|
+| `--color-foreground` | `--raw-foreground` | 기본 텍스트 | ✅ |
+| `--color-foreground-muted` | `--raw-foreground-muted` | 보조 텍스트 | ✅ |
+| `--color-foreground-subtle` | `--raw-foreground-subtle` | 힌트 텍스트 | ✅ |
+| `--color-foreground-disabled` | `--color-gray-600` | 비활성화 텍스트 | ❌ |
 
 ### Colors - Feedback (Alert 상태)
 
@@ -376,15 +726,28 @@ Tailwind CSS v4에서는 CSS 변수의 **네임스페이스**가 자동으로 �
 | Error | `--color-feedback-error-bg` | `--color-feedback-error-border` | `--color-feedback-error-text` |
 | Default | `--color-feedback-default-bg` | `--color-feedback-default-border` | `--color-feedback-default-text` |
 
-### Colors - Border
+### Colors - Border - 다크모드 지원
 
-| CSS 변수 | 참조값 | 용도 |
-|---------|-------|------|
-| `--color-border` | `--color-black-a12` | 기본 border |
-| `--color-border-subtle` | `--color-black-a8` | 약한 border |
-| `--color-border-input` | `--color-gray-350` | Input border |
-| `--color-border-focus` | `--color-blue-500` | Focus 상태 |
-| `--color-border-error` | `--color-red-600` | Error 상태 |
+| CSS 변수 | 참조값 | 용도 | 다크모드 |
+|---------|-------|------|---------|
+| `--color-border` | `--raw-border` | 기본 border | ✅ |
+| `--color-border-subtle` | `--raw-border-subtle` | 약한 border | ✅ |
+| `--color-border-input` | `--raw-border-input` | Input border | ✅ |
+| `--color-border-focus` | `--color-blue-500` | Focus 상태 | ❌ |
+| `--color-border-error` | `--color-red-600` | Error 상태 | ❌ |
+
+### Colors - Form Elements - 다크모드 지원
+
+| CSS 변수 | 참조값 | 용도 | 다크모드 |
+|---------|-------|------|---------|
+| `--color-input-text` | `--raw-input-text` | Input 텍스트 | ✅ |
+| `--color-label-text` | `--raw-label-text` | Label 텍스트 | ✅ |
+| `--color-helper-text` | `--raw-helper-text` | Helper 텍스트 | ✅ |
+| `--color-checkbox-border` | `--raw-checkbox-border` | Checkbox 테두리 | ✅ |
+| `--color-checkbox-label` | `--raw-checkbox-label` | Checkbox 라벨 | ✅ |
+| `--color-checkbox-hint` | `--raw-checkbox-hint` | Checkbox 힌트 | ✅ |
+| `--color-textarea-border` | `--raw-textarea-border` | Textarea 테두리 | ✅ |
+| `--color-textarea-bg-disabled` | `--raw-textarea-bg-disabled` | Textarea 비활성화 배경 | ✅ |
 
 ### Colors - Overlay
 
@@ -662,38 +1025,38 @@ Tailwind CSS v4에서는 CSS 변수의 **네임스페이스**가 자동으로 �
 | `--text-input` | `--text-base` (14px) | `text-input` |
 | `--radius-input` | `--rounded-base` (3px) | `rounded-input` |
 
-#### Colors
+#### Colors - 다크모드 지원
 
-| CSS 변수 | 생성 클래스 | 용도 |
-|---------|-----------|------|
-| `--color-input-bg` | `bg-input-bg` | 기본 배경 |
-| `--color-input-bg-disabled` | `bg-input-bg-disabled` | 비활성화 배경 |
-| `--color-input-text` | `text-input-text` | 텍스트 색상 |
-| `--color-input-border` | `border-input-border` | 기본 테두리 |
-| `--color-input-border-focus` | `border-input-border-focus` | Focus 테두리 |
-| `--color-input-border-error` | `border-input-border-error` | Error 테두리 |
+| CSS 변수 | 생성 클래스 | 용도 | 다크모드 |
+|---------|-----------|------|---------|
+| `--color-input-bg` | `bg-input-bg` | 기본 배경 | ✅ |
+| `--color-input-bg-disabled` | `bg-input-bg-disabled` | 비활성화 배경 | ✅ |
+| `--color-input-text` | `text-input-text` | 텍스트 색상 | ✅ |
+| `--color-input-border` | `border-input-border` | 기본 테두리 | ✅ |
+| `--color-input-border-focus` | `border-input-border-focus` | Focus 테두리 | ❌ |
+| `--color-input-border-error` | `border-input-border-error` | Error 테두리 | ❌ |
 
 ---
 
 ### Label
 
-| CSS 변수 | 참조값 | 생성 클래스 |
-|---------|-------|-----------|
-| `--text-label` | `--text-sm` (12px) | `text-label` |
-| `--color-label-text` | `--color-gray-800` | `text-label-text` |
-| `--color-label-required` | `--color-destructive` | `text-label-required` |
-| `--spacing-label-sm` ~ `--spacing-label-3xl` | 4px ~ 24px | `mb-label-sm` 등 |
+| CSS 변수 | 참조값 | 생성 클래스 | 다크모드 |
+|---------|-------|-----------|---------|
+| `--text-label` | `--text-sm` (12px) | `text-label` | - |
+| `--color-label-text` | `--color-label-text` | `text-label-text` | ✅ |
+| `--color-label-required` | `--color-destructive` | `text-label-required` | ❌ |
+| `--spacing-label-sm` ~ `--spacing-label-3xl` | 4px ~ 24px | `mb-label-sm` 등 | - |
 
 ---
 
 ### Helper Text
 
-| CSS 변수 | 참조값 | 생성 클래스 |
-|---------|-------|-----------|
-| `--text-helper` | `--text-sm` (12px) | `text-helper` |
-| `--color-helper-text` | `--color-foreground-disabled` | `text-helper-text` |
-| `--color-helper-error` | `--color-destructive` | `text-helper-error` |
-| `--spacing-helper-sm` ~ `--spacing-helper-3xl` | 4px ~ 24px | `mt-helper-sm` 등 |
+| CSS 변수 | 참조값 | 생성 클래스 | 다크모드 |
+|---------|-------|-----------|---------|
+| `--text-helper` | `--text-sm` (12px) | `text-helper` | - |
+| `--color-helper-text` | `--color-helper-text` | `text-helper-text` | ✅ |
+| `--color-helper-error` | `--color-destructive` | `text-helper-error` | ❌ |
+| `--spacing-helper-sm` ~ `--spacing-helper-3xl` | 4px ~ 24px | `mt-helper-sm` 등 | - |
 
 ---
 
@@ -707,44 +1070,44 @@ Tailwind CSS v4에서는 CSS 변수의 **네임스페이스**가 자동으로 �
 
 #### Base
 
-| CSS 변수 | 참조값 | 생성 클래스 |
-|---------|-------|-----------|
-| `--radius-card` | `--rounded-md` (4px) | `rounded-card` |
-| `--color-card-bg` | `--color-background` | `bg-card-bg` |
+| CSS 변수 | 참조값 | 생성 클래스 | 다크모드 |
+|---------|-------|-----------|---------|
+| `--radius-card` | `--rounded-md` (4px) | `rounded-card` | - |
+| `--color-card-bg` | `--color-background` | `bg-card-bg` | ✅ |
 
 #### Border & Shadow
 
-| CSS 변수 | 생성 클래스 | 용도 |
-|---------|-----------|------|
-| `--color-card-border` | `border-card-border` | 기본 테두리 |
-| `--color-card-border-subtle` | `border-card-border-subtle` | 약한 테두리 |
-| `--shadow-card` | `shadow-card` | 기본 그림자 |
-| `--shadow-card-elevated` | `shadow-card-elevated` | 강조 그림자 |
-| `--color-card-bg-flat` | `bg-card-bg-flat` | flat 스타일 배경 |
+| CSS 변수 | 생성 클래스 | 용도 | 다크모드 |
+|---------|-----------|------|---------|
+| `--color-card-border` | `border-card-border` | 기본 테두리 | ✅ |
+| `--color-card-border-subtle` | `border-card-border-subtle` | 약한 테두리 | ✅ |
+| `--shadow-card` | `shadow-card` | 기본 그림자 | - |
+| `--shadow-card-elevated` | `shadow-card-elevated` | 강조 그림자 | - |
+| `--color-card-bg-flat` | `bg-card-bg-flat` | flat 스타일 배경 | ✅ |
 
 #### Header
 
-| CSS 변수 | 생성 클래스 |
-|---------|-----------|
-| `--color-card-header-bg` | `bg-card-header-bg` |
-| `--color-card-header-border` | `border-card-header-border` |
+| CSS 변수 | 생성 클래스 | 다크모드 |
+|---------|-----------|---------|
+| `--color-card-header-bg` | `bg-card-header-bg` | ✅ |
+| `--color-card-header-border` | `border-card-header-border` | ✅ |
 
 #### Title
 
-| CSS 변수 | 참조값 | 생성 클래스 |
-|---------|-------|-----------|
-| `--text-card-title` | `--text-xl` (18px) | `text-card-title` |
-| `--font-card-title` | `--font-medium` (500) | `font-card-title` |
-| `--leading-card-title` | `--leading-loose` (1.6) | `leading-card-title` |
-| `--color-card-title` | `--color-foreground` | `text-card-title` |
+| CSS 변수 | 참조값 | 생성 클래스 | 다크모드 |
+|---------|-------|-----------|---------|
+| `--text-card-title` | `--text-xl` (18px) | `text-card-title` | - |
+| `--font-card-title` | `--font-medium` (500) | `font-card-title` | - |
+| `--leading-card-title` | `--leading-loose` (1.6) | `leading-card-title` | - |
+| `--color-card-title` | `--color-foreground` | `text-card-title` | ✅ |
 
 #### Subtitle
 
-| CSS 변수 | 참조값 | 생성 클래스 |
-|---------|-------|-----------|
-| `--text-card-subtitle` | `--text-base` (14px) | `text-card-subtitle` |
-| `--leading-card-subtitle` | `--leading-normal` (1.43) | `leading-card-subtitle` |
-| `--color-card-subtitle` | `--color-foreground-muted` | `text-card-subtitle` |
+| CSS 변수 | 참조값 | 생성 클래스 | 다크모드 |
+|---------|-------|-----------|---------|
+| `--text-card-subtitle` | `--text-base` (14px) | `text-card-subtitle` | - |
+| `--leading-card-subtitle` | `--leading-normal` (1.43) | `leading-card-subtitle` | - |
+| `--color-card-subtitle` | `--color-foreground-muted` | `text-card-subtitle` | ✅ |
 
 ---
 
@@ -798,37 +1161,37 @@ Tailwind CSS v4에서는 CSS 변수의 **네임스페이스**가 자동으로 �
 
 #### Overlay & Content
 
-| CSS 변수 | 생성 클래스 |
-|---------|-----------|
-| `--color-modal-overlay` | `bg-modal-overlay` |
-| `--color-modal-bg` | `bg-modal-bg` |
-| `--radius-modal` | `rounded-modal` |
-| `--shadow-modal` | `shadow-modal` |
+| CSS 변수 | 생성 클래스 | 다크모드 |
+|---------|-----------|---------|
+| `--color-modal-overlay` | `bg-modal-overlay` | - |
+| `--color-modal-bg` | `bg-modal-bg` | ✅ |
+| `--radius-modal` | `rounded-modal` | - |
+| `--shadow-modal` | `shadow-modal` | - |
 
 #### Title
 
-| CSS 변수 | 참조값 | 생성 클래스 |
-|---------|-------|-----------|
-| `--text-modal-title` | `--text-xl` (18px) | `text-modal-title` |
-| `--font-modal-title` | `--font-medium` (500) | `font-modal-title` |
-| `--color-modal-title` | `--color-foreground` | `text-modal-title` |
+| CSS 변수 | 참조값 | 생성 클래스 | 다크모드 |
+|---------|-------|-----------|---------|
+| `--text-modal-title` | `--text-xl` (18px) | `text-modal-title` | - |
+| `--font-modal-title` | `--font-medium` (500) | `font-modal-title` | - |
+| `--color-modal-title` | `--color-foreground` | `text-modal-title` | ✅ |
 
 #### Close Button
 
-| CSS 변수 | 참조값 | 생성 클래스 |
-|---------|-------|-----------|
-| `--text-modal-close` | `--text-3xl` (28px) | `text-modal-close` |
-| `--size-modal-close` | `--size-icon-md` (32px) | `size-modal-close` |
-| `--color-modal-close` | `--color-foreground-subtle` | `text-modal-close` |
-| `--color-modal-close-hover` | `--color-hover-overlay` | `hover:bg-modal-close-hover` |
-| `--radius-modal-close` | `--rounded-full` | `rounded-modal-close` |
+| CSS 변수 | 참조값 | 생성 클래스 | 다크모드 |
+|---------|-------|-----------|---------|
+| `--text-modal-close` | `--text-3xl` (28px) | `text-modal-close` | - |
+| `--size-modal-close` | `--size-icon-md` (32px) | `size-modal-close` | - |
+| `--color-modal-close` | `--color-foreground-subtle` | `text-modal-close` | ✅ |
+| `--color-modal-close-hover` | `--color-hover-overlay` | `hover:bg-modal-close-hover` | - |
+| `--radius-modal-close` | `--rounded-full` | `rounded-modal-close` | - |
 
 #### Borders
 
-| CSS 변수 | 생성 클래스 |
-|---------|-----------|
-| `--color-modal-header-border` | `border-modal-header-border` |
-| `--color-modal-footer-border` | `border-modal-footer-border` |
+| CSS 변수 | 생성 클래스 | 다크모드 |
+|---------|-----------|---------|
+| `--color-modal-header-border` | `border-modal-header-border` | ✅ |
+| `--color-modal-footer-border` | `border-modal-footer-border` | ✅ |
 
 ---
 
@@ -842,36 +1205,36 @@ Tailwind CSS v4에서는 CSS 변수의 **네임스페이스**가 자동으로 �
 
 #### Base
 
-| CSS 변수 | 참조값 | 생성 클래스 |
-|---------|-------|-----------|
-| `--text-table` | `--text-base` (14px) | `text-table` |
-| `--color-table-bg` | `--color-background` | `bg-table-bg` |
+| CSS 변수 | 참조값 | 생성 클래스 | 다크모드 |
+|---------|-------|-----------|---------|
+| `--text-table` | `--text-base` (14px) | `text-table` | - |
+| `--color-table-bg` | `--color-background` | `bg-table-bg` | ✅ |
 
 #### Header
 
-| CSS 변수 | 참조값 | 생성 클래스 |
-|---------|-------|-----------|
-| `--color-table-header-bg` | `--color-background-subtle` | `bg-table-header-bg` |
-| `--text-table-header` | `--text-sm` (12px) | `text-table-header` |
-| `--font-table-header` | `--font-medium` (500) | `font-table-header` |
-| `--tracking-table-header` | `--tracking-wide` (0.03em) | `tracking-table-header` |
-| `--color-table-header-text` | `--color-foreground-muted` | `text-table-header-text` |
-| `--color-table-header-border` | `--color-border` | `border-table-header-border` |
+| CSS 변수 | 참조값 | 생성 클래스 | 다크모드 |
+|---------|-------|-----------|---------|
+| `--color-table-header-bg` | `--color-background-subtle` | `bg-table-header-bg` | ✅ |
+| `--text-table-header` | `--text-sm` (12px) | `text-table-header` | - |
+| `--font-table-header` | `--font-medium` (500) | `font-table-header` | - |
+| `--tracking-table-header` | `--tracking-wide` (0.03em) | `tracking-table-header` | - |
+| `--color-table-header-text` | `--color-foreground-muted` | `text-table-header-text` | ✅ |
+| `--color-table-header-border` | `--color-border` | `border-table-header-border` | ✅ |
 
 #### Cell
 
-| CSS 변수 | 생성 클래스 |
-|---------|-----------|
-| `--color-table-cell-text` | `text-table-cell-text` |
-| `--color-table-cell-border` | `border-table-cell-border` |
+| CSS 변수 | 생성 클래스 | 다크모드 |
+|---------|-----------|---------|
+| `--color-table-cell-text` | `text-table-cell-text` | ✅ |
+| `--color-table-cell-border` | `border-table-cell-border` | ✅ |
 
 #### Variants
 
-| CSS 변수 | 생성 클래스 | 용도 |
-|---------|-----------|------|
-| `--color-table-striped-bg` | `bg-table-striped-bg` | 줄무늬 배경 |
-| `--color-table-hover-bg` | `bg-table-hover-bg` | Hover 배경 |
-| `--color-table-bordered-border` | `border-table-bordered-border` | bordered 테두리 |
+| CSS 변수 | 생성 클래스 | 용도 | 다크모드 |
+|---------|-----------|------|---------|
+| `--color-table-striped-bg` | `bg-table-striped-bg` | 줄무늬 배경 | ✅ |
+| `--color-table-hover-bg` | `bg-table-hover-bg` | Hover 배경 | - |
+| `--color-table-bordered-border` | `border-table-bordered-border` | bordered 테두리 | ✅ |
 
 ---
 
@@ -892,29 +1255,29 @@ Tailwind CSS v4에서는 CSS 변수의 **네임스페이스**가 자동으로 �
 
 #### Colors
 
-| CSS 변수 | 생성 클래스 | 용도 |
-|---------|-----------|------|
-| `--color-checkbox-border` | `border-checkbox-border` | 기본 테두리 |
-| `--color-checkbox-bg` | `bg-checkbox-bg` | 기본 배경 |
-| `--color-checkbox-bg-checked` | `bg-checkbox-bg-checked` | 체크 배경 |
-| `--color-checkbox-border-checked` | `border-checkbox-border-checked` | 체크 테두리 |
-| `--color-checkbox-checkmark` | `text-checkbox-checkmark` | 체크마크 색상 |
+| CSS 변수 | 생성 클래스 | 용도 | 다크모드 |
+|---------|-----------|------|---------|
+| `--color-checkbox-border` | `border-checkbox-border` | 기본 테두리 | ✅ |
+| `--color-checkbox-bg` | `bg-checkbox-bg` | 기본 배경 | ✅ |
+| `--color-checkbox-bg-checked` | `bg-checkbox-bg-checked` | 체크 배경 | ❌ |
+| `--color-checkbox-border-checked` | `border-checkbox-border-checked` | 체크 테두리 | ❌ |
+| `--color-checkbox-checkmark` | `text-checkbox-checkmark` | 체크마크 색상 | ❌ |
 
 #### Label
 
-| CSS 변수 | 참조값 | 생성 클래스 |
-|---------|-------|-----------|
-| `--text-checkbox-label` | `--text-base` (14px) | `text-checkbox-label` |
-| `--leading-checkbox-label` | `--leading-snug` (1.4) | `leading-checkbox-label` |
-| `--color-checkbox-label` | `--color-gray-750` | `text-checkbox-label` |
-| `--color-checkbox-label-error` | `--color-red-500` | `text-checkbox-label-error` |
+| CSS 변수 | 참조값 | 생성 클래스 | 다크모드 |
+|---------|-------|-----------|---------|
+| `--text-checkbox-label` | `--text-base` (14px) | `text-checkbox-label` | - |
+| `--leading-checkbox-label` | `--leading-snug` (1.4) | `leading-checkbox-label` | - |
+| `--color-checkbox-label` | `--color-checkbox-label` | `text-checkbox-label` | ✅ |
+| `--color-checkbox-label-error` | `--color-red-500` | `text-checkbox-label-error` | ❌ |
 
 #### Hint
 
-| CSS 변수 | 참조값 | 생성 클래스 |
-|---------|-------|-----------|
-| `--text-checkbox-hint` | `--text-sm` (12px) | `text-checkbox-hint` |
-| `--color-checkbox-hint` | `--color-gray-550` | `text-checkbox-hint` |
+| CSS 변수 | 참조값 | 생성 클래스 | 다크모드 |
+|---------|-------|-----------|---------|
+| `--text-checkbox-hint` | `--text-sm` (12px) | `text-checkbox-hint` | - |
+| `--color-checkbox-hint` | `--color-checkbox-hint` | `text-checkbox-hint` | ✅ |
 
 ---
 
@@ -936,14 +1299,14 @@ Tailwind CSS v4에서는 CSS 변수의 **네임스페이스**가 자동으로 �
 
 #### Colors
 
-| CSS 변수 | 생성 클래스 | 용도 |
-|---------|-----------|------|
-| `--color-textarea-border` | `border-textarea-border` | 기본 테두리 |
-| `--color-textarea-border-focus` | `focus:border-textarea-border-focus` | Focus 테두리 |
-| `--color-textarea-border-error` | `border-textarea-border-error` | Error 테두리 |
-| `--color-textarea-bg` | `bg-textarea-bg` | 기본 배경 |
-| `--color-textarea-bg-disabled` | `bg-textarea-bg-disabled` | 비활성화 배경 |
-| `--color-textarea-text` | `text-textarea-text` | 텍스트 색상 |
+| CSS 변수 | 생성 클래스 | 용도 | 다크모드 |
+|---------|-----------|------|---------|
+| `--color-textarea-border` | `border-textarea-border` | 기본 테두리 | ✅ |
+| `--color-textarea-border-focus` | `focus:border-textarea-border-focus` | Focus 테두리 | ❌ |
+| `--color-textarea-border-error` | `border-textarea-border-error` | Error 테두리 | ❌ |
+| `--color-textarea-bg` | `bg-textarea-bg` | 기본 배경 | ✅ |
+| `--color-textarea-bg-disabled` | `bg-textarea-bg-disabled` | 비활성화 배경 | ✅ |
+| `--color-textarea-text` | `text-textarea-text` | 텍스트 색상 | ✅ |
 
 ---
 
@@ -952,6 +1315,112 @@ Tailwind CSS v4에서는 CSS 변수의 **네임스페이스**가 자동으로 �
 | CSS 변수 | 참조값 | 생성 클래스 |
 |---------|-------|-----------|
 | `--spacing-form-group-sm` ~ `--spacing-form-group-3xl` | 4px ~ 24px | `mb-form-group-xl` 등 |
+
+---
+
+## 다크 모드
+
+### 아키텍처
+
+다크 모드는 **3단계 체이닝**으로 구현됩니다:
+
+```
+┌─────────────────────────────────────────────────────────────────┐
+│  primitive.css                                                  │
+│                                                                 │
+│  :root {                                                        │
+│    --raw-background: var(--color-white);  ← Light 기본값        │
+│  }                                                              │
+│                                                                 │
+│  .dark {                                                        │
+│    --raw-background: var(--color-gray-800);  ← Dark 오버라이드  │
+│  }                                                              │
+└──────────────────────────┬──────────────────────────────────────┘
+                           │
+                           ▼
+┌─────────────────────────────────────────────────────────────────┐
+│  semantic.css                                                   │
+│                                                                 │
+│  @theme inline {                                                │
+│    --color-background: var(--raw-background);                   │
+│  }                                                              │
+└──────────────────────────┬──────────────────────────────────────┘
+                           │
+                           ▼
+┌─────────────────────────────────────────────────────────────────┐
+│  컴파일 결과                                                     │
+│                                                                 │
+│  .bg-background {                                               │
+│    background: var(--raw-background);                           │
+│  }                         ↑                                    │
+│                            └─ .dark 클래스 적용 시 자동 변경     │
+└─────────────────────────────────────────────────────────────────┘
+```
+
+### 설정
+
+다크 모드는 `.dark` 클래스를 통해 활성화됩니다:
+
+```tsx
+// 다크 모드 토글
+<html className="dark">
+  ...
+</html>
+```
+
+### index.css의 다크 모드 variant 설정
+
+```css
+@custom-variant dark (&:is(.dark *));
+```
+
+### 자동 변경되는 토큰
+
+`.dark` 클래스 적용 시 자동으로 변경되는 토큰들:
+
+| 카테고리 | Light | Dark |
+|---------|-------|------|
+| **Background** | | |
+| `--raw-background` | `white` | `gray-800` |
+| `--raw-background-subtle` | `gray-50` | `gray-700` |
+| `--raw-background-muted` | `gray-100` | `gray-700` |
+| `--raw-background-disabled` | `gray-100` | `gray-600` |
+| **Foreground** | | |
+| `--raw-foreground` | `black-a87` | `white` |
+| `--raw-foreground-muted` | `black-a60` | `gray-300` |
+| `--raw-foreground-subtle` | `black-a54` | `gray-400` |
+| **Border** | | |
+| `--raw-border` | `black-a12` | `gray-600` |
+| `--raw-border-subtle` | `black-a8` | `gray-700` |
+| `--raw-border-input` | `gray-350` | `gray-500` |
+| **Form Elements** | | |
+| `--raw-input-text` | `black` | `white` |
+| `--raw-label-text` | `gray-800` | `gray-200` |
+| `--raw-helper-text` | `gray-600` | `gray-400` |
+| `--raw-checkbox-border` | `gray-300` | `gray-500` |
+| `--raw-checkbox-label` | `gray-750` | `gray-200` |
+| `--raw-checkbox-hint` | `gray-550` | `gray-400` |
+| `--raw-textarea-border` | `black-a23` | `gray-500` |
+| `--raw-textarea-bg-disabled` | `black-a12` | `gray-700` |
+
+### 사용 예시
+
+```tsx
+// 다크 모드 자동 적용 (별도 클래스 불필요)
+<div className="bg-background text-foreground">
+  자동으로 다크 모드에서 색상 변경
+</div>
+
+// 컴포넌트 토큰 사용 - 다크모드 자동 적용
+<div className="bg-card-bg text-card-title border-card-border">
+  Card 컴포넌트
+</div>
+
+// 다크 모드 커스텀 스타일 (수동)
+<div className="bg-white dark:bg-gray-800">
+  수동 다크 모드 설정
+</div>
+```
 
 ---
 
@@ -1480,52 +1949,6 @@ export const Input = forwardRef<HTMLInputElement, InputProps>(
 
 ---
 
-## 다크 모드
-
-### 설정
-
-다크 모드는 `.dark` 클래스를 통해 활성화됩니다:
-
-```tsx
-// 다크 모드 토글
-<html className="dark">
-  ...
-</html>
-```
-
-### 자동 변경되는 토큰
-
-```css
-.dark {
-  --color-background: var(--color-gray-800);       /* 다크 배경 */
-  --color-background-subtle: var(--color-gray-700);
-  --color-background-muted: var(--color-gray-700);
-
-  --color-foreground: var(--color-white);          /* 라이트 텍스트 */
-  --color-foreground-muted: var(--color-gray-300);
-  --color-foreground-subtle: var(--color-gray-400);
-
-  --color-border: var(--color-gray-600);           /* 다크 테두리 */
-  --color-border-subtle: var(--color-gray-700);
-}
-```
-
-### 사용 예시
-
-```tsx
-// 다크 모드 자동 적용 (별도 클래스 불필요)
-<div className="bg-background text-foreground">
-  자동으로 다크 모드에서 색상 변경
-</div>
-
-// 다크 모드 커스텀 스타일
-<div className="bg-white dark:bg-gray-800">
-  수동 다크 모드 설정
-</div>
-```
-
----
-
 ## 마이그레이션 가이드
 
 ### 기존 하드코딩된 값을 토큰으로 변환
@@ -1553,11 +1976,57 @@ export const Input = forwardRef<HTMLInputElement, InputProps>(
 }
 ```
 
+### JavaScript에서 토큰 값 읽기
+
+```javascript
+// 런타임에 CSS 변수 값 읽기
+const styles = getComputedStyle(document.documentElement);
+const primaryColor = styles.getPropertyValue('--color-primary');
+```
+
 ---
 
 ## 주의사항
 
 1. **토큰 파일 수정 시**: primitive → semantic → components 순서로 체이닝되므로, 상위 레벨 변경 시 하위 레벨에 영향
 2. **네임스페이스 규칙**: Tailwind v4의 네임스페이스 규칙을 반드시 따라야 클래스 생성
-3. **@theme vs @theme inline**: primitive는 `@theme`, 나머지는 `@theme inline` 사용
-4. **Dark Mode**: `.dark` 클래스 기반, `@theme` 바깥에서 CSS cascade로 정의
+3. **@theme vs @theme inline**:
+   - `@theme`: 정적 값 정의 (리터럴 값)
+   - `@theme inline`: 다른 변수 참조 시 사용 (다크모드 지원)
+4. **동적 변수**: 다크모드 등 런타임 변경이 필요한 값은 `@theme` 바깥에서 `:root`/`.dark`로 정의
+5. **Dark Mode**: `.dark` 클래스 기반, `--raw-*` 동적 변수가 자동으로 변경됨
+
+---
+
+## Quick Reference
+
+### @theme 사용 시점
+- 정적 리터럴 값 정의: `--color-white: #ffffff`
+- Tailwind 유틸리티 클래스 생성 필요 시
+
+### @theme inline 사용 시점
+- 다른 CSS 변수 참조: `--color-background: var(--raw-background)`
+- 다크모드 지원이 필요한 토큰
+
+### :root / .dark 사용 시점
+- 런타임에 동적으로 변경되어야 하는 값
+- 다크모드 전환 시 변경되어야 하는 원본 변수
+
+```css
+/* 패턴 요약 */
+@theme {
+  --color-white: #ffffff;  /* 정적 값 */
+}
+
+:root {
+  --raw-background: var(--color-white);  /* 동적 원본 (Light) */
+}
+
+.dark {
+  --raw-background: var(--color-gray-800);  /* 동적 원본 (Dark) */
+}
+
+@theme inline {
+  --color-background: var(--raw-background);  /* 동적 참조 */
+}
+```
