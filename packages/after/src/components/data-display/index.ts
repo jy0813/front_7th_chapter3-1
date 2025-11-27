@@ -10,4 +10,3 @@ export {
   TableCaption,
 } from '@/components/data-display/table';
 export { StatCard } from '@/components/data-display/stat-card';
-export { StatCardGroup } from '@/components/data-display/stat-card-group';
