@@ -14,7 +14,11 @@
   "aliases": {
     "components": "@/components",
     "utils": "@/lib/utils",
-    "ui": "@/components/ui",
+    "inputs": "@/components/inputs",
+    "data-display": "@/components/data-display",
+    "surfaces": "@/components/surfaces",
+    "feedback": "@/components/feedback",
+    "navigation": "@/components/navigation",
     "lib": "@/lib",
     "hooks": "@/hooks",
     "tokens": "@/tokens"
