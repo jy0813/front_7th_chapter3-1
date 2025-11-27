@@ -27,6 +27,8 @@
   /* Blue Scale */
   --color-blue-50: #e3f2fd;
   --color-blue-200: #90caf9;
+  --color-blue-300: #64b5f6;
+  --color-blue-400: #42a5f5;
   --color-blue-500: #1976d2;
   --color-blue-600: #1565c0;
   --color-blue-700: #0288d1;
@@ -35,6 +37,7 @@
   /* Red Scale */
   --color-red-50: #ffebee;
   --color-red-300: #e57373;
+  --color-red-400: #ef5350;
   --color-red-500: #ef4444;
   --color-red-600: #d32f2f;
   --color-red-700: #c62828;
@@ -43,6 +46,8 @@
   /* Green Scale */
   --color-green-50: #e8f5e9;
   --color-green-300: #81c784;
+  --color-green-400: #66bb6a;
+  --color-green-500: #4caf50;
   --color-green-600: #388e3c;
   --color-green-700: #2e7d32;
   --color-green-900: #1b5e20;
@@ -50,7 +55,9 @@
   /* Orange Scale */
   --color-orange-50: #fff3e0;
   --color-orange-300: #ffb74d;
+  --color-orange-500: #ff9800;
   --color-orange-600: #f57c00;
+  --color-orange-700: #ef6c00;
   --color-orange-800: #e65100;
 
   /* ----------------------------------------
@@ -221,6 +228,9 @@
   }
 
   .dark {
+    /* ----------------------------------------
+       RAW TOKENS (Surface colors)
+       ---------------------------------------- */
     /* Background */
     --raw-background: var(--color-gray-800);
     --raw-background-subtle: var(--color-gray-700);
@@ -250,5 +260,65 @@
     /* Textarea specific */
     --raw-textarea-border: var(--color-gray-500);
     --raw-textarea-bg-disabled: var(--color-gray-700);
+
+    /* ----------------------------------------
+       INTENT-BASED COLORS (다크모드 조정)
+       ---------------------------------------- */
+    /* Primary: 다크모드에서 더 밝고 부드러운 파란색 */
+    --color-primary: var(--color-blue-400);
+    --color-primary-hover: var(--color-blue-300);
+
+    /* Secondary: 다크모드에서 회색 조정 */
+    --color-secondary: var(--color-gray-700);
+    --color-secondary-hover: var(--color-gray-600);
+    --color-secondary-foreground: var(--color-gray-200);
+    --color-secondary-border: var(--color-gray-600);
+
+    /* Destructive: 다크모드에서 덜 강렬한 빨강 */
+    --color-destructive: var(--color-red-500);
+    --color-destructive-hover: var(--color-red-400);
+
+    /* Success: 다크모드에서 덜 강렬한 초록 */
+    --color-success: var(--color-green-500);
+    --color-success-hover: var(--color-green-400);
+
+    /* Warning: 다크모드에서 덜 강렬한 주황 */
+    --color-warning: var(--color-orange-500);
+
+    /* Info: 다크모드에서 덜 강렬한 파랑 */
+    --color-info: var(--color-blue-500);
+
+    /* ----------------------------------------
+       FEEDBACK VARIANTS (다크모드 배경)
+       ---------------------------------------- */
+    --color-feedback-info-bg: rgba(33, 150, 243, 0.15);
+    --color-feedback-info-border: var(--color-blue-700);
+    --color-feedback-info-text: var(--color-blue-300);
+
+    --color-feedback-success-bg: rgba(76, 175, 80, 0.15);
+    --color-feedback-success-border: var(--color-green-700);
+    --color-feedback-success-text: var(--color-green-300);
+
+    --color-feedback-warning-bg: rgba(255, 152, 0, 0.15);
+    --color-feedback-warning-border: var(--color-orange-700);
+    --color-feedback-warning-text: var(--color-orange-300);
+
+    --color-feedback-error-bg: rgba(244, 67, 54, 0.15);
+    --color-feedback-error-border: var(--color-red-700);
+    --color-feedback-error-text: var(--color-red-300);
+
+    --color-feedback-default-bg: var(--color-gray-800);
+    --color-feedback-default-border: var(--color-gray-600);
+    --color-feedback-default-text: var(--color-gray-300);
+
+    /* ----------------------------------------
+       BORDER & FOCUS (다크모드 조정)
+       ---------------------------------------- */
+    --color-border-focus: var(--color-blue-400);
+    --color-border-error: var(--color-red-500);
+    --color-focus-ring: var(--color-blue-400);
+
+    /* Foreground disabled: 다크모드용 */
+    --color-foreground-disabled: var(--color-gray-500);
   }
 }
