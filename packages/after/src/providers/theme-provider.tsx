@@ -47,6 +47,14 @@ export function ThemeProvider({ children }: { children: React.ReactNode }) {
   React.useEffect(() => {
     // Save to localStorage
     localStorage.setItem('theme', theme)
+
+    // Apply theme to <html> element
+    const root = document.documentElement
+    if (theme === 'dark') {
+      root.classList.add('dark')
+    } else {
+      root.classList.remove('dark')
+    }
   }, [theme])
 
   const toggleTheme = React.useCallback(() => {
