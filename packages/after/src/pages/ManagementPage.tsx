@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import { useForm } from 'react-hook-form';
 import { Button } from '@/components/inputs/button';
 import { Badge } from '@/components/data-display/badge';
 import { Alert } from '@/components/feedback/alert';
@@ -17,6 +18,7 @@ import {
   DialogHeader,
   DialogFooter,
   DialogTitle,
+  DialogDescription,
   DialogBody,
 } from '@/components/feedback/dialog';
 import {
@@ -27,8 +29,14 @@ import {
 } from '@/components/navigation/tabs';
 import { Card, CardContent } from '@/components/surfaces/card';
 import { Input } from '@/components/inputs/input';
-import { Label } from '@/components/inputs/label';
-import { FormItem } from '@/components/inputs/form';
+import {
+  Form,
+  FormField,
+  FormItem,
+  FormLabel,
+  FormControl,
+  FormMessage,
+} from '@/components/inputs/form';
 import {
   NativeSelect,
   NativeSelectOption,
@@ -42,6 +50,30 @@ import type { Post } from '../services/postService';
 type EntityType = 'user' | 'post';
 type Entity = User | Post;
 
+// 타입 가드 함수
+const isUser = (item: Entity): item is User => {
+  return 'username' in item && 'email' in item;
+};
+
+const isPost = (item: Entity): item is Post => {
+  return 'title' in item && 'content' in item;
+};
+
+// 통합 Form 타입 정의
+type FormData = {
+  // User fields
+  username?: string;
+  email?: string;
+  role?: 'user' | 'moderator' | 'admin';
+  // Post fields
+  title?: string;
+  author?: string;
+  category?: string;
+  content?: string;
+  // Shared fields
+  status?: string;
+};
+
 export const ManagementPage: React.FC = () => {
   const [entityType, setEntityType] = useState<EntityType>('post');
   const [data, setData] = useState<Entity[]>([]);
@@ -53,11 +85,26 @@ export const ManagementPage: React.FC = () => {
   const [showErrorAlert, setShowErrorAlert] = useState(false);
   const [errorMessage, setErrorMessage] = useState('');
 
-  const [formData, setFormData] = useState<any>({});
+  // react-hook-form 설정 (통합 form)
+  const form = useForm<FormData>({
+    defaultValues: {
+      // User fields
+      username: '',
+      email: '',
+      role: 'user',
+      // Post fields
+      title: '',
+      author: '',
+      category: '',
+      content: '',
+      // Shared fields
+      status: 'active',
+    },
+  });
 
   useEffect(() => {
     loadData();
-    setFormData({});
+    form.reset();
     setIsCreateModalOpen(false);
     setIsEditModalOpen(false);
     setSelectedItem(null);
@@ -80,34 +127,80 @@ export const ManagementPage: React.FC = () => {
     }
   };
 
-  const handleCreate = async () => {
+  const handleCreate = async (formData: FormData) => {
     try {
       if (entityType === 'user') {
+        let hasError = false;
+        if (!formData.username) {
+          form.setError('username', { type: 'manual', message: '사용자명을 입력해주세요' });
+          hasError = true;
+        }
+        if (!formData.email) {
+          form.setError('email', { type: 'manual', message: '이메일을 입력해주세요' });
+          hasError = true;
+        }
+        if (hasError) return;
+
+        const userStatus = formData.status || 'active';
+        if (
+          userStatus !== 'active' &&
+          userStatus !== 'inactive' &&
+          userStatus !== 'suspended'
+        ) {
+          form.setError('status', { type: 'manual', message: '유효하지 않은 상태입니다' });
+          return;
+        }
         await userService.create({
-          username: formData.username,
-          email: formData.email,
+          username: formData.username!,
+          email: formData.email!,
           role: formData.role || 'user',
-          status: formData.status || 'active',
+          status: userStatus,
         });
       } else {
+        let hasError = false;
+        if (!formData.title) {
+          form.setError('title', { type: 'manual', message: '제목을 입력해주세요' });
+          hasError = true;
+        }
+        if (!formData.author) {
+          form.setError('author', { type: 'manual', message: '작성자를 입력해주세요' });
+          hasError = true;
+        }
+        if (!formData.category) {
+          form.setError('category', { type: 'manual', message: '카테고리를 선택해주세요' });
+          hasError = true;
+        }
+        if (hasError) return;
+
+        const postStatus = formData.status || 'draft';
+        if (
+          postStatus !== 'draft' &&
+          postStatus !== 'published' &&
+          postStatus !== 'archived'
+        ) {
+          form.setError('status', { type: 'manual', message: '유효하지 않은 상태입니다' });
+          return;
+        }
         await postService.create({
-          title: formData.title,
+          title: formData.title!,
           content: formData.content || '',
-          author: formData.author,
-          category: formData.category,
-          status: formData.status || 'draft',
+          author: formData.author!,
+          category: formData.category!,
+          status: postStatus,
         });
       }
 
       await loadData();
       setIsCreateModalOpen(false);
-      setFormData({});
+      form.reset();
       setAlertMessage(
         `${entityType === 'user' ? '사용자' : '게시글'}가 생성되었습니다`,
       );
       setShowSuccessAlert(true);
-    } catch (error: any) {
-      setErrorMessage(error.message || '생성에 실패했습니다');
+    } catch (error) {
+      const message =
+        error instanceof Error ? error.message : '생성에 실패했습니다';
+      setErrorMessage(message);
       setShowErrorAlert(true);
     }
   };
@@ -115,48 +208,101 @@ export const ManagementPage: React.FC = () => {
   const handleEdit = (item: Entity) => {
     setSelectedItem(item);
 
-    if (entityType === 'user') {
-      const user = item as User;
-      setFormData({
-        username: user.username,
-        email: user.email,
-        role: user.role,
-        status: user.status,
+    if (entityType === 'user' && isUser(item)) {
+      form.reset({
+        username: item.username,
+        email: item.email,
+        role: item.role,
+        status: item.status,
       });
-    } else {
-      const post = item as Post;
-      setFormData({
-        title: post.title,
-        content: post.content,
-        author: post.author,
-        category: post.category,
-        status: post.status,
+    } else if (entityType === 'post' && isPost(item)) {
+      form.reset({
+        title: item.title,
+        content: item.content,
+        author: item.author,
+        category: item.category,
+        status: item.status,
       });
     }
 
     setIsEditModalOpen(true);
   };
 
-  const handleUpdate = async () => {
+  const handleUpdate = async (formData: FormData) => {
     if (!selectedItem) return;
 
     try {
-      if (entityType === 'user') {
-        await userService.update(selectedItem.id, formData);
-      } else {
-        await postService.update(selectedItem.id, formData);
+      if (entityType === 'user' && isUser(selectedItem)) {
+        // 필수 필드 검증
+        let hasError = false;
+        if (!formData.username) {
+          form.setError('username', { type: 'manual', message: '사용자명을 입력해주세요' });
+          hasError = true;
+        }
+        if (!formData.email) {
+          form.setError('email', { type: 'manual', message: '이메일을 입력해주세요' });
+          hasError = true;
+        }
+        if (hasError) return;
+
+        const updateData: Partial<Omit<User, 'id' | 'createdAt'>> = {};
+        updateData.username = formData.username!;
+        updateData.email = formData.email!;
+        if (formData.role) updateData.role = formData.role;
+        const userStatus = formData.status;
+        if (
+          userStatus === 'active' ||
+          userStatus === 'inactive' ||
+          userStatus === 'suspended'
+        ) {
+          updateData.status = userStatus;
+        }
+        await userService.update(selectedItem.id, updateData);
+      } else if (entityType === 'post' && isPost(selectedItem)) {
+        // 필수 필드 검증
+        let hasError = false;
+        if (!formData.title) {
+          form.setError('title', { type: 'manual', message: '제목을 입력해주세요' });
+          hasError = true;
+        }
+        if (!formData.author) {
+          form.setError('author', { type: 'manual', message: '작성자를 입력해주세요' });
+          hasError = true;
+        }
+        if (!formData.category) {
+          form.setError('category', { type: 'manual', message: '카테고리를 선택해주세요' });
+          hasError = true;
+        }
+        if (hasError) return;
+
+        const updateData: Partial<Omit<Post, 'id' | 'createdAt' | 'views'>> = {};
+        updateData.title = formData.title!;
+        if (formData.content !== undefined) updateData.content = formData.content;
+        updateData.author = formData.author!;
+        updateData.category = formData.category!;
+        const postStatus = formData.status;
+        if (
+          postStatus === 'draft' ||
+          postStatus === 'published' ||
+          postStatus === 'archived'
+        ) {
+          updateData.status = postStatus;
+        }
+        await postService.update(selectedItem.id, updateData);
       }
 
       await loadData();
       setIsEditModalOpen(false);
-      setFormData({});
+      form.reset();
       setSelectedItem(null);
       setAlertMessage(
         `${entityType === 'user' ? '사용자' : '게시글'}가 수정되었습니다`,
       );
       setShowSuccessAlert(true);
-    } catch (error: any) {
-      setErrorMessage(error.message || '수정에 실패했습니다');
+    } catch (error) {
+      const message =
+        error instanceof Error ? error.message : '수정에 실패했습니다';
+      setErrorMessage(message);
       setShowErrorAlert(true);
     }
   };
@@ -583,173 +729,221 @@ export const ManagementPage: React.FC = () => {
             <DialogTitle>
               새 {entityType === 'user' ? '사용자' : '게시글'} 만들기
             </DialogTitle>
+            <DialogDescription>
+              {entityType === 'user'
+                ? '새로운 사용자 정보를 입력하세요.'
+                : '새로운 게시글 정보를 입력하세요.'}
+            </DialogDescription>
           </DialogHeader>
           <DialogBody>
-            <div className="flex flex-col gap-16">
-              {entityType === 'user' ? (
-                <>
-                  <FormItem>
-                    <Label htmlFor="username">사용자명 *</Label>
-                    <Input
-                      id="username"
+            <Form {...form}>
+              <form
+                onSubmit={form.handleSubmit(handleCreate)}
+                className="flex flex-col gap-4"
+              >
+                {entityType === 'user' ? (
+                  <>
+                    <FormField
+                      control={form.control}
                       name="username"
-                      value={formData.username || ''}
-                      onChange={(e) =>
-                        setFormData({ ...formData, username: e.target.value })
-                      }
-                      placeholder="사용자명을 입력하세요"
-                      fieldWidth="full"
+                      render={({ field }) => (
+                        <FormItem>
+                          <FormLabel>
+                            사용자명 <span className="text-destructive">*</span>
+                          </FormLabel>
+                          <FormControl>
+                            <Input
+                              placeholder="사용자명을 입력하세요"
+                              fieldWidth="full"
+                              required
+                              {...field}
+                            />
+                          </FormControl>
+                          <FormMessage />
+                        </FormItem>
+                      )}
                     />
-                  </FormItem>
-                  <FormItem>
-                    <Label htmlFor="email">이메일 *</Label>
-                    <Input
-                      id="email"
+                    <FormField
+                      control={form.control}
                       name="email"
-                      type="email"
-                      value={formData.email || ''}
-                      onChange={(e) =>
-                        setFormData({ ...formData, email: e.target.value })
-                      }
-                      placeholder="이메일을 입력하세요"
-                      fieldWidth="full"
+                      render={({ field }) => (
+                        <FormItem>
+                          <FormLabel>
+                            이메일 <span className="text-destructive">*</span>
+                          </FormLabel>
+                          <FormControl>
+                            <Input
+                              type="email"
+                              placeholder="이메일을 입력하세요"
+                              fieldWidth="full"
+                              required
+                              {...field}
+                            />
+                          </FormControl>
+                          <FormMessage />
+                        </FormItem>
+                      )}
                     />
-                  </FormItem>
-                  <div className="grid grid-cols-2 gap-16">
-                    <FormItem>
-                      <Label htmlFor="role">역할</Label>
-                      <NativeSelect
-                        id="role"
+                    <div className="grid grid-cols-2 gap-4">
+                      <FormField
+                        control={form.control}
                         name="role"
-                        value={formData.role || 'user'}
-                        onChange={(e) =>
-                          setFormData({ ...formData, role: e.target.value })
-                        }
-                        fieldWidth="full"
-                      >
-                        <NativeSelectOption value="user">
-                          사용자
-                        </NativeSelectOption>
-                        <NativeSelectOption value="moderator">
-                          운영자
-                        </NativeSelectOption>
-                        <NativeSelectOption value="admin">
-                          관리자
-                        </NativeSelectOption>
-                      </NativeSelect>
-                    </FormItem>
-                    <FormItem>
-                      <Label htmlFor="status">상태</Label>
-                      <NativeSelect
-                        id="status"
-                        name="status"
-                        value={formData.status || 'active'}
-                        onChange={(e) =>
-                          setFormData({ ...formData, status: e.target.value })
-                        }
-                        fieldWidth="full"
-                      >
-                        <NativeSelectOption value="active">
-                          활성
-                        </NativeSelectOption>
-                        <NativeSelectOption value="inactive">
-                          비활성
-                        </NativeSelectOption>
-                        <NativeSelectOption value="suspended">
-                          정지
-                        </NativeSelectOption>
-                      </NativeSelect>
-                    </FormItem>
-                  </div>
-                </>
-              ) : (
-                <>
-                  <FormItem>
-                    <Label htmlFor="title">제목 *</Label>
-                    <Input
-                      id="title"
-                      name="title"
-                      value={formData.title || ''}
-                      onChange={(e) =>
-                        setFormData({ ...formData, title: e.target.value })
-                      }
-                      placeholder="게시글 제목을 입력하세요"
-                      fieldWidth="full"
-                    />
-                  </FormItem>
-                  <div className="grid grid-cols-2 gap-16">
-                    <FormItem>
-                      <Label htmlFor="author">작성자 *</Label>
-                      <Input
-                        id="author"
-                        name="author"
-                        value={formData.author || ''}
-                        onChange={(e) =>
-                          setFormData({ ...formData, author: e.target.value })
-                        }
-                        placeholder="작성자명"
-                        fieldWidth="full"
+                        render={({ field }) => (
+                          <FormItem>
+                            <FormLabel>역할</FormLabel>
+                            <FormControl>
+                              <NativeSelect fieldWidth="full" {...field}>
+                                <NativeSelectOption value="user">
+                                  사용자
+                                </NativeSelectOption>
+                                <NativeSelectOption value="moderator">
+                                  운영자
+                                </NativeSelectOption>
+                                <NativeSelectOption value="admin">
+                                  관리자
+                                </NativeSelectOption>
+                              </NativeSelect>
+                            </FormControl>
+                            <FormMessage />
+                          </FormItem>
+                        )}
                       />
-                    </FormItem>
-                    <FormItem>
-                      <Label htmlFor="category">카테고리</Label>
-                      <NativeSelect
-                        id="category"
-                        name="category"
-                        value={formData.category || ''}
-                        onChange={(e) =>
-                          setFormData({ ...formData, category: e.target.value })
-                        }
-                        fieldWidth="full"
-                      >
-                        <NativeSelectOption value="">
-                          카테고리 선택
-                        </NativeSelectOption>
-                        <NativeSelectOption value="development">
-                          Development
-                        </NativeSelectOption>
-                        <NativeSelectOption value="design">
-                          Design
-                        </NativeSelectOption>
-                        <NativeSelectOption value="accessibility">
-                          Accessibility
-                        </NativeSelectOption>
-                      </NativeSelect>
-                    </FormItem>
-                  </div>
-                  <FormItem>
-                    <Label htmlFor="content">내용</Label>
-                    <Textarea
-                      id="content"
-                      name="content"
-                      value={formData.content || ''}
-                      onChange={(e) =>
-                        setFormData({ ...formData, content: e.target.value })
-                      }
-                      placeholder="게시글 내용을 입력하세요"
-                      rows={6}
-                      fieldWidth="full"
+                      <FormField
+                        control={form.control}
+                        name="status"
+                        render={({ field }) => (
+                          <FormItem>
+                            <FormLabel>상태</FormLabel>
+                            <FormControl>
+                              <NativeSelect fieldWidth="full" {...field}>
+                                <NativeSelectOption value="active">
+                                  활성
+                                </NativeSelectOption>
+                                <NativeSelectOption value="inactive">
+                                  비활성
+                                </NativeSelectOption>
+                                <NativeSelectOption value="suspended">
+                                  정지
+                                </NativeSelectOption>
+                              </NativeSelect>
+                            </FormControl>
+                            <FormMessage />
+                          </FormItem>
+                        )}
+                      />
+                    </div>
+                  </>
+                ) : (
+                  <>
+                    <FormField
+                      control={form.control}
+                      name="title"
+                      render={({ field }) => (
+                        <FormItem>
+                          <FormLabel>
+                            제목 <span className="text-destructive">*</span>
+                          </FormLabel>
+                          <FormControl>
+                            <Input
+                              placeholder="게시글 제목을 입력하세요"
+                              fieldWidth="full"
+                              required
+                              {...field}
+                            />
+                          </FormControl>
+                          <FormMessage />
+                        </FormItem>
+                      )}
                     />
-                  </FormItem>
-                </>
-              )}
-            </div>
+                    <div className="grid grid-cols-2 gap-4">
+                      <FormField
+                        control={form.control}
+                        name="author"
+                        render={({ field }) => (
+                          <FormItem>
+                            <FormLabel>
+                              작성자 <span className="text-destructive">*</span>
+                            </FormLabel>
+                            <FormControl>
+                              <Input
+                                placeholder="작성자명"
+                                fieldWidth="full"
+                                required
+                                {...field}
+                              />
+                            </FormControl>
+                            <FormMessage />
+                          </FormItem>
+                        )}
+                      />
+                      <FormField
+                        control={form.control}
+                        name="category"
+                        render={({ field }) => (
+                          <FormItem>
+                            <FormLabel>
+                              카테고리 <span className="text-destructive">*</span>
+                            </FormLabel>
+                            <FormControl>
+                              <NativeSelect fieldWidth="full" required {...field}>
+                                <NativeSelectOption value="">
+                                  카테고리 선택
+                                </NativeSelectOption>
+                                <NativeSelectOption value="development">
+                                  Development
+                                </NativeSelectOption>
+                                <NativeSelectOption value="design">
+                                  Design
+                                </NativeSelectOption>
+                                <NativeSelectOption value="accessibility">
+                                  Accessibility
+                                </NativeSelectOption>
+                              </NativeSelect>
+                            </FormControl>
+                            <FormMessage />
+                          </FormItem>
+                        )}
+                      />
+                    </div>
+                    <FormField
+                      control={form.control}
+                      name="content"
+                      render={({ field }) => (
+                        <FormItem>
+                          <FormLabel>내용</FormLabel>
+                          <FormControl>
+                            <Textarea
+                              placeholder="게시글 내용을 입력하세요"
+                              rows={6}
+                              fieldWidth="full"
+                              {...field}
+                            />
+                          </FormControl>
+                          <FormMessage />
+                        </FormItem>
+                      )}
+                    />
+                  </>
+                )}
+                <DialogFooter>
+                  <Button
+                    variant="secondary"
+                    size="md"
+                    type="button"
+                    onClick={() => {
+                      setIsCreateModalOpen(false);
+                      form.reset();
+                    }}
+                  >
+                    취소
+                  </Button>
+                  <Button variant="primary" size="md" type="submit">
+                    생성
+                  </Button>
+                </DialogFooter>
+              </form>
+            </Form>
           </DialogBody>
-          <DialogFooter>
-            <Button
-              variant="secondary"
-              size="md"
-              onClick={() => {
-                setIsCreateModalOpen(false);
-                setFormData({});
-              }}
-            >
-              취소
-            </Button>
-            <Button variant="primary" size="md" onClick={handleCreate}>
-              생성
-            </Button>
-          </DialogFooter>
         </DialogContent>
       </Dialog>
 
@@ -760,182 +954,227 @@ export const ManagementPage: React.FC = () => {
             <DialogTitle>
               {entityType === 'user' ? '사용자' : '게시글'} 수정
             </DialogTitle>
+            <DialogDescription>
+              {entityType === 'user'
+                ? '사용자 정보를 수정하세요.'
+                : '게시글 정보를 수정하세요.'}
+            </DialogDescription>
           </DialogHeader>
           <DialogBody>
-            <div className="flex flex-col gap-16">
-              {selectedItem && (
-                <Alert variant="info" showIcon={false}>
-                  ID: {selectedItem.id} | 생성일: {selectedItem.createdAt}
-                  {entityType === 'post' &&
-                    ` | 조회수: ${(selectedItem as Post).views}`}
-                </Alert>
-              )}
-
-              {entityType === 'user' ? (
-                <>
-                  <FormItem>
-                    <Label htmlFor="edit-username">사용자명 *</Label>
-                    <Input
-                      id="edit-username"
+            {selectedItem && (
+              <Alert variant="info" showIcon={false} className="mb-4">
+                ID: {selectedItem.id} | 생성일: {selectedItem.createdAt}
+                {entityType === 'post' &&
+                  ` | 조회수: ${(selectedItem as Post).views}`}
+              </Alert>
+            )}
+            <Form {...form}>
+              <form
+                onSubmit={form.handleSubmit(handleUpdate)}
+                className="flex flex-col gap-4"
+              >
+                {entityType === 'user' ? (
+                  <>
+                    <FormField
+                      control={form.control}
                       name="username"
-                      value={formData.username || ''}
-                      onChange={(e) =>
-                        setFormData({ ...formData, username: e.target.value })
-                      }
-                      placeholder="사용자명을 입력하세요"
-                      fieldWidth="full"
+                      render={({ field }) => (
+                        <FormItem>
+                          <FormLabel>
+                            사용자명 <span className="text-destructive">*</span>
+                          </FormLabel>
+                          <FormControl>
+                            <Input
+                              placeholder="사용자명을 입력하세요"
+                              fieldWidth="full"
+                              required
+                              {...field}
+                            />
+                          </FormControl>
+                          <FormMessage />
+                        </FormItem>
+                      )}
                     />
-                  </FormItem>
-                  <FormItem>
-                    <Label htmlFor="edit-email">이메일 *</Label>
-                    <Input
-                      id="edit-email"
+                    <FormField
+                      control={form.control}
                       name="email"
-                      type="email"
-                      value={formData.email || ''}
-                      onChange={(e) =>
-                        setFormData({ ...formData, email: e.target.value })
-                      }
-                      placeholder="이메일을 입력하세요"
-                      fieldWidth="full"
+                      render={({ field }) => (
+                        <FormItem>
+                          <FormLabel>
+                            이메일 <span className="text-destructive">*</span>
+                          </FormLabel>
+                          <FormControl>
+                            <Input
+                              type="email"
+                              placeholder="이메일을 입력하세요"
+                              fieldWidth="full"
+                              required
+                              {...field}
+                            />
+                          </FormControl>
+                          <FormMessage />
+                        </FormItem>
+                      )}
                     />
-                  </FormItem>
-                  <div className="grid grid-cols-2 gap-16">
-                    <FormItem>
-                      <Label htmlFor="edit-role">역할</Label>
-                      <NativeSelect
-                        id="edit-role"
+                    <div className="grid grid-cols-2 gap-4">
+                      <FormField
+                        control={form.control}
                         name="role"
-                        value={formData.role || 'user'}
-                        onChange={(e) =>
-                          setFormData({ ...formData, role: e.target.value })
-                        }
-                        fieldWidth="full"
-                      >
-                        <NativeSelectOption value="user">
-                          사용자
-                        </NativeSelectOption>
-                        <NativeSelectOption value="moderator">
-                          운영자
-                        </NativeSelectOption>
-                        <NativeSelectOption value="admin">
-                          관리자
-                        </NativeSelectOption>
-                      </NativeSelect>
-                    </FormItem>
-                    <FormItem>
-                      <Label htmlFor="edit-status">상태</Label>
-                      <NativeSelect
-                        id="edit-status"
-                        name="status"
-                        value={formData.status || 'active'}
-                        onChange={(e) =>
-                          setFormData({ ...formData, status: e.target.value })
-                        }
-                        fieldWidth="full"
-                      >
-                        <NativeSelectOption value="active">
-                          활성
-                        </NativeSelectOption>
-                        <NativeSelectOption value="inactive">
-                          비활성
-                        </NativeSelectOption>
-                        <NativeSelectOption value="suspended">
-                          정지
-                        </NativeSelectOption>
-                      </NativeSelect>
-                    </FormItem>
-                  </div>
-                </>
-              ) : (
-                <>
-                  <FormItem>
-                    <Label htmlFor="edit-title">제목 *</Label>
-                    <Input
-                      id="edit-title"
-                      name="title"
-                      value={formData.title || ''}
-                      onChange={(e) =>
-                        setFormData({ ...formData, title: e.target.value })
-                      }
-                      placeholder="게시글 제목을 입력하세요"
-                      fieldWidth="full"
-                    />
-                  </FormItem>
-                  <div className="grid grid-cols-2 gap-16">
-                    <FormItem>
-                      <Label htmlFor="edit-author">작성자 *</Label>
-                      <Input
-                        id="edit-author"
-                        name="author"
-                        value={formData.author || ''}
-                        onChange={(e) =>
-                          setFormData({ ...formData, author: e.target.value })
-                        }
-                        placeholder="작성자명"
-                        fieldWidth="full"
+                        render={({ field }) => (
+                          <FormItem>
+                            <FormLabel>역할</FormLabel>
+                            <FormControl>
+                              <NativeSelect fieldWidth="full" {...field}>
+                                <NativeSelectOption value="user">
+                                  사용자
+                                </NativeSelectOption>
+                                <NativeSelectOption value="moderator">
+                                  운영자
+                                </NativeSelectOption>
+                                <NativeSelectOption value="admin">
+                                  관리자
+                                </NativeSelectOption>
+                              </NativeSelect>
+                            </FormControl>
+                            <FormMessage />
+                          </FormItem>
+                        )}
                       />
-                    </FormItem>
-                    <FormItem>
-                      <Label htmlFor="edit-category">카테고리</Label>
-                      <NativeSelect
-                        id="edit-category"
-                        name="category"
-                        value={formData.category || ''}
-                        onChange={(e) =>
-                          setFormData({ ...formData, category: e.target.value })
-                        }
-                        fieldWidth="full"
-                      >
-                        <NativeSelectOption value="">
-                          카테고리 선택
-                        </NativeSelectOption>
-                        <NativeSelectOption value="development">
-                          Development
-                        </NativeSelectOption>
-                        <NativeSelectOption value="design">
-                          Design
-                        </NativeSelectOption>
-                        <NativeSelectOption value="accessibility">
-                          Accessibility
-                        </NativeSelectOption>
-                      </NativeSelect>
-                    </FormItem>
-                  </div>
-                  <FormItem>
-                    <Label htmlFor="edit-content">내용</Label>
-                    <Textarea
-                      id="edit-content"
-                      name="content"
-                      value={formData.content || ''}
-                      onChange={(e) =>
-                        setFormData({ ...formData, content: e.target.value })
-                      }
-                      placeholder="게시글 내용을 입력하세요"
-                      rows={6}
-                      fieldWidth="full"
+                      <FormField
+                        control={form.control}
+                        name="status"
+                        render={({ field }) => (
+                          <FormItem>
+                            <FormLabel>상태</FormLabel>
+                            <FormControl>
+                              <NativeSelect fieldWidth="full" {...field}>
+                                <NativeSelectOption value="active">
+                                  활성
+                                </NativeSelectOption>
+                                <NativeSelectOption value="inactive">
+                                  비활성
+                                </NativeSelectOption>
+                                <NativeSelectOption value="suspended">
+                                  정지
+                                </NativeSelectOption>
+                              </NativeSelect>
+                            </FormControl>
+                            <FormMessage />
+                          </FormItem>
+                        )}
+                      />
+                    </div>
+                  </>
+                ) : (
+                  <>
+                    <FormField
+                      control={form.control}
+                      name="title"
+                      render={({ field }) => (
+                        <FormItem>
+                          <FormLabel>
+                            제목 <span className="text-destructive">*</span>
+                          </FormLabel>
+                          <FormControl>
+                            <Input
+                              placeholder="게시글 제목을 입력하세요"
+                              fieldWidth="full"
+                              required
+                              {...field}
+                            />
+                          </FormControl>
+                          <FormMessage />
+                        </FormItem>
+                      )}
                     />
-                  </FormItem>
-                </>
-              )}
-            </div>
+                    <div className="grid grid-cols-2 gap-4">
+                      <FormField
+                        control={form.control}
+                        name="author"
+                        render={({ field }) => (
+                          <FormItem>
+                            <FormLabel>
+                              작성자 <span className="text-destructive">*</span>
+                            </FormLabel>
+                            <FormControl>
+                              <Input
+                                placeholder="작성자명"
+                                fieldWidth="full"
+                                required
+                                {...field}
+                              />
+                            </FormControl>
+                            <FormMessage />
+                          </FormItem>
+                        )}
+                      />
+                      <FormField
+                        control={form.control}
+                        name="category"
+                        render={({ field }) => (
+                          <FormItem>
+                            <FormLabel>카테고리</FormLabel>
+                            <FormControl>
+                              <NativeSelect fieldWidth="full" {...field}>
+                                <NativeSelectOption value="">
+                                  카테고리 선택
+                                </NativeSelectOption>
+                                <NativeSelectOption value="development">
+                                  Development
+                                </NativeSelectOption>
+                                <NativeSelectOption value="design">
+                                  Design
+                                </NativeSelectOption>
+                                <NativeSelectOption value="accessibility">
+                                  Accessibility
+                                </NativeSelectOption>
+                              </NativeSelect>
+                            </FormControl>
+                            <FormMessage />
+                          </FormItem>
+                        )}
+                      />
+                    </div>
+                    <FormField
+                      control={form.control}
+                      name="content"
+                      render={({ field }) => (
+                        <FormItem>
+                          <FormLabel>내용</FormLabel>
+                          <FormControl>
+                            <Textarea
+                              placeholder="게시글 내용을 입력하세요"
+                              rows={6}
+                              fieldWidth="full"
+                              {...field}
+                            />
+                          </FormControl>
+                          <FormMessage />
+                        </FormItem>
+                      )}
+                    />
+                  </>
+                )}
+                <DialogFooter>
+                  <Button
+                    variant="secondary"
+                    size="md"
+                    type="button"
+                    onClick={() => {
+                      setIsEditModalOpen(false);
+                      form.reset();
+                      setSelectedItem(null);
+                    }}
+                  >
+                    취소
+                  </Button>
+                  <Button variant="primary" size="md" type="submit">
+                    수정 완료
+                  </Button>
+                </DialogFooter>
+              </form>
+            </Form>
           </DialogBody>
-          <DialogFooter>
-            <Button
-              variant="secondary"
-              size="md"
-              onClick={() => {
-                setIsEditModalOpen(false);
-                setFormData({});
-                setSelectedItem(null);
-              }}
-            >
-              취소
-            </Button>
-            <Button variant="primary" size="md" onClick={handleUpdate}>
-              수정 완료
-            </Button>
-          </DialogFooter>
         </DialogContent>
       </Dialog>
     </>
