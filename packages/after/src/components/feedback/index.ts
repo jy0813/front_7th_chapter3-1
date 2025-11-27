@@ -1,3 +1,4 @@
+export { Alert } from '@/components/feedback/alert';
 export {
   Dialog,
   DialogTrigger,
