@@ -14,7 +14,7 @@ import {
 } from "react-hook-form"
 
 import { cn } from "@/lib/utils"
-import { Label } from "@/components/ui/label"
+import { Label } from "@/components/inputs/label"
 
 const Form = FormProvider
 
@@ -80,7 +80,11 @@ function FormItem({ className, ...props }: React.ComponentProps<"div">) {
     <FormItemContext.Provider value={{ id }}>
       <div
         data-slot="form-item"
-        className={cn("grid gap-2", className)}
+        className={cn(
+          // 레거시 호환: form-group 유틸리티
+          "form-group grid gap-spacing-xs",
+          className
+        )}
         {...props}
       />
     </FormItemContext.Provider>
@@ -97,7 +101,11 @@ function FormLabel({
     <Label
       data-slot="form-label"
       data-error={!!error}
-      className={cn("data-[error=true]:text-destructive", className)}
+      className={cn(
+        // 레거시 호환: typo-label 유틸리티 (Label 컴포넌트에 이미 적용됨)
+        "data-[error=true]:text-helper-error",
+        className
+      )}
       htmlFor={formItemId}
       {...props}
     />
@@ -129,7 +137,11 @@ function FormDescription({ className, ...props }: React.ComponentProps<"p">) {
     <p
       data-slot="form-description"
       id={formDescriptionId}
-      className={cn("text-muted-foreground text-sm", className)}
+      className={cn(
+        // 레거시 호환: typo-helper 유틸리티 + text-helper-text 토큰
+        "typo-helper text-helper-text",
+        className
+      )}
       {...props}
     />
   )
@@ -147,7 +159,11 @@ function FormMessage({ className, ...props }: React.ComponentProps<"p">) {
     <p
       data-slot="form-message"
       id={formMessageId}
-      className={cn("text-destructive text-sm", className)}
+      className={cn(
+        // 레거시 호환: typo-helper 유틸리티 + text-helper-error 토큰
+        "typo-helper text-helper-error",
+        className
+      )}
       {...props}
     >
       {body}
