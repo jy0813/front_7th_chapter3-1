@@ -1,0 +1,587 @@
+# Design System
+
+Tailwind CSS v4의 `@theme`과 `@utility` 디렉티브를 활용한 토큰 기반 디자인 시스템입니다.
+
+## 시작하기
+
+이 디자인 시스템은 **3단계 토큰 계층** (Primitive → Semantic → Component)을 통해 일관성 있고 확장 가능한 UI 컴포넌트를 제공합니다.
+
+### 주요 특징
+
+- **🎨 Tailwind v4 토큰 시스템**: `@theme`으로 CSS 변수 정의, `@utility`로 복합 스타일 정의
+- **🌙 다크 모드**: CSS 변수 기반 자동 다크 모드 (`--raw-*` 토큰 활용)
+- **♿ 접근성**: WCAG 2.1 가이드라인 준수, Focus Ring 자동 적용
+
+## 토큰 시스템 구조
+
+### 3단계 토큰 계층
+
+```
+Primitive Tokens (순수 값 - primitive.css)
+    ↓
+Semantic Tokens (의미 부여 - semantic.css)
+    ↓
+Component Tokens (컴포넌트별 - components.css)
+```
+
+### 1단계: Primitive Tokens (`primitive.css`)
+
+순수한 디자인 값을 정의합니다. 의미론적 맥락 없이 **실제 값**만 선언합니다.
+
+```css
+@theme {
+  /* 색상 */
+  --color-blue-500: #1976d2;
+  --color-red-600: #d32f2f;
+  --color-gray-800: #333333;
+
+  /* 간격 */
+  --spacing-8: 8px;
+  --spacing-12: 12px;
+  --spacing-16: 16px;
+
+  /* 폰트 크기 */
+  --font-size-14: 14px;
+  --font-size-16: 16px;
+
+  /* 기타 */
+  --radius-4: 4px;
+  --font-weight-500: 500;
+  --line-height-1-5: 1.5;
+}
+```
+
+**제공하는 값**:
+
+- **색상**: Gray, Blue, Red, Green, Orange + Alpha 색상
+- **간격**: 0px ~ 32px (2px 단위)
+- **폰트**: 크기(10px~28px), 굵기(400/500/700), 행간(1~1.6)
+- **반지름**: 0px ~ 10px, full(9999px)
+- **너비**: 16px ~ 900px
+
+### 2단계: Semantic Tokens (`semantic.css`)
+
+Primitive 값에 **의미(Intent)**와 **맥락(Context)**을 부여합니다.
+
+```css
+@theme inline {
+  /* Intent-based Colors */
+  --color-primary: var(--color-blue-500);
+  --color-destructive: var(--color-red-600);
+  --color-success: var(--color-green-600);
+
+  /* Surface Colors (다크모드 자동 대응) */
+  --color-background: var(--raw-background);
+  --color-foreground: var(--raw-foreground);
+  --color-border: var(--raw-border);
+
+  /* Typography */
+  --text-base: var(--font-size-14);
+  --text-lg: var(--font-size-16);
+  --font-medium: var(--font-weight-500);
+  --leading-relaxed: var(--line-height-1-5);
+
+  /* Spacing (Tailwind 유틸리티 생성) */
+  --spacing-md: var(--spacing-8);
+  --spacing-lg: var(--spacing-12);
+  --spacing-xl: var(--spacing-16);
+
+  /* Radius */
+  --radius-base: var(--radius-4);
+}
+```
+
+**다크모드 동작 원리**:
+
+- `--raw-*` 토큰: Primitive에서 `.dark` 클래스로 라이트/다크 값을 동적으로 정의
+- Semantic 토큰이 `--raw-*`를 참조 → `.dark` 클래스 추가 시 자동 변경
+- **Intent 색상도 다크모드 재정의**: `--color-primary` 등도 `.dark`에서 더 밝은 색으로 변경
+
+```css
+/* primitive.css */
+@layer base {
+  :root {
+    /* 라이트 모드 */
+    --raw-background: var(--color-white);
+    --raw-foreground: var(--color-black-a87);
+  }
+
+  .dark {
+    /* 다크 모드 */
+    --raw-background: var(--color-gray-800);
+    --raw-foreground: var(--color-white);
+
+    /* Intent 색상도 재정의 (더 밝게) */
+    --color-primary: var(--color-blue-400);
+    --color-destructive: var(--color-red-500);
+  }
+}
+
+/* semantic.css */
+--color-background: var(--raw-background); /* 자동 테마 전환 */
+--color-primary: var(--color-blue-500); /* 라이트 기본값, .dark에서 재정의됨 */
+```
+
+### 3단계: Component Tokens (`components.css`)
+
+컴포넌트별로 구체화된 스타일을 정의합니다.
+
+**구조**:
+
+1. **@theme inline**: 컴포넌트별 CSS 변수 (값만 정의)
+2. **@utility**: 복합 스타일 클래스 (여러 속성 조합)
+
+```css
+/* 1. 값 정의 (@theme) */
+@theme inline {
+  /* Button Spacing */
+  --spacing-btn-md: var(--spacing-md);
+
+  /* Button Colors */
+  --color-btn-primary-bg: var(--color-primary);
+  --color-btn-primary-text: var(--color-primary-foreground);
+
+  /* Button Radius */
+  --radius-btn: var(--radius-base);
+}
+
+/* 2. 복합 스타일 (@utility) */
+@utility btn-base {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--spacing-md);
+  border-radius: var(--radius-btn);
+  transition-duration: var(--duration-fast);
+}
+
+@utility btn-primary {
+  background-color: var(--color-btn-primary-bg);
+  color: var(--color-btn-primary-text);
+}
+
+@utility padding-btn-md {
+  padding-block: var(--spacing-10);
+  padding-inline: var(--spacing-20);
+}
+```
+
+**사용 예시**:
+
+```tsx
+<button className="btn-base btn-primary padding-btn-md typo-btn-md">
+  Primary Button
+</button>
+```
+
+## 컴포넌트 카테고리
+
+### Inputs
+
+사용자 입력을 받는 컴포넌트입니다.
+
+- **Button**: 7 variants (Primary, Secondary, Destructive, Success, Outline, Ghost, Link) × 4 sizes (sm/md/lg/icon)
+  - 토큰: `--color-btn-*`, `--spacing-btn-*`, `--radius-btn`
+  - 유틸리티: `btn-base`, `btn-primary`, `padding-btn-md`, `typo-btn-md`
+
+- **Input**: Text/Email/Password 타입 지원, Error 상태
+  - 토큰: `--color-input-*`, `--radius-input`
+  - 유틸리티: `input-base`, `input-focus`, `input-error`, `typo-input`
+
+- **Textarea**: 4 fieldWidth (sm/md/lg/full)
+  - 토큰: `--spacing-textarea-*`, `--radius-textarea`
+  - 유틸리티: `textarea-base`, `field-width-md`, `typo-textarea`
+
+- **Label**: 폼 필드 라벨
+  - 토큰: `--color-label-*`, `--spacing-label-*`
+  - 유틸리티: `label-base`, `typo-label`
+
+- **NativeSelect**: 4 fieldWidth, OptGroup 지원
+  - 토큰: `--color-input-*` (Input과 공유)
+  - 유틸리티: `select-base`, `field-width-md`
+
+### Data Display
+
+데이터를 표시하는 컴포넌트입니다.
+
+- **Badge**: 5 variants (Primary, Secondary, Destructive, Success, Outline)
+  - 토큰: `--color-badge-*`, `--spacing-badge-*`, `--radius-badge`
+  - 유틸리티: `badge-base`, `badge-primary`, `padding-badge-md`, `typo-badge-md`
+
+- **Table**: 4 variants (Basic, Striped, Bordered, Hoverable)
+  - 토큰: `--color-table-*`, `--spacing-table-*`
+  - 유틸리티: `table-base`, `table-th`, `table-td`, `table-striped-row`, `typo-table-header`
+
+- **StatCard**: 5 variants (Primary, Success, Warning, Destructive, Neutral)
+  - 토큰: `--color-stat-*`, `--spacing-stat-*`, `--radius-stat`
+  - 유틸리티: `stat-card-base`, `stat-card-primary`, `typo-stat-label`, `typo-stat-value`
+
+### Surfaces
+
+컨테이너 역할을 하는 컴포넌트입니다.
+
+- **Card**: 3 variants (Default, Bordered, Elevated)
+  - 토큰: `--color-card-*`, `--spacing-card-*`, `--radius-card`, `--shadow-card`
+  - 유틸리티: `card-base`, `card-default`, `card-header`, `card-body`, `typo-card-title`
+
+- **Header**: ThemeToggle, UserSection 포함
+  - 토큰: `--color-header-*`, `--size-header-*`, `--height-header`, `--z-index-header`
+  - 유틸리티: `header-base`, `header-container`, `header-logo`, `header-avatar`
+
+### Feedback
+
+사용자에게 피드백을 제공하는 컴포넌트입니다.
+
+- **Alert**: 4 variants (Info, Success, Warning, Destructive)
+  - 토큰: `--color-alert-*` (Semantic `--color-feedback-*` 참조)
+  - 유틸리티: `alert-base`, `alert-info`, `typo-alert-title`, `typo-alert-body`
+
+- **Dialog**: 3 sizes (sm/md/lg), FormDialog, ConfirmationDialog
+  - 토큰: `--color-modal-*`, `--width-modal-*`, `--shadow-modal`, `--z-modal`
+  - 유틸리티: `modal-overlay`, `modal-content`, `modal-sm`, `modal-header`, `modal-body`
+
+### Navigation
+
+네비게이션 컴포넌트입니다.
+
+- **Tabs**: 기본 탭, Disabled 상태
+  - 토큰: `--color-tabs-*`, `--spacing-tabs-*`, `--radius-tabs-trigger`
+  - 유틸리티: `tabs-list`, `tabs-trigger-base`, `tabs-trigger-active`, `typo-tabs-trigger`
+
+## Tailwind 유틸리티 클래스 생성 규칙
+
+Tailwind v4는 `@theme`에 정의된 변수를 **자동으로 유틸리티 클래스로 변환**합니다.
+
+### Spacing 예시
+
+```css
+/* semantic.css */
+@theme inline {
+  --spacing-md: var(--spacing-8);
+  --spacing-lg: var(--spacing-12);
+  --spacing-xl: var(--spacing-16);
+}
+```
+
+**생성되는 유틸리티**:
+
+- `p-md` → `padding: var(--spacing-md)`
+- `m-lg` → `margin: var(--spacing-lg)`
+- `gap-xl` → `gap: var(--spacing-xl)`
+- `px-md`, `py-md`, `mt-lg`, `mb-xl` 등 모든 조합 자동 생성
+
+### Color 예시
+
+```css
+@theme inline {
+  --color-primary: var(--color-blue-500);
+  --color-destructive: var(--color-red-600);
+}
+```
+
+**생성되는 유틸리티**:
+
+- `bg-primary` → `background-color: var(--color-primary)`
+- `text-destructive` → `color: var(--color-destructive)`
+- `border-primary` 등 자동 생성
+
+### Width/Height 예시
+
+```css
+@theme inline {
+  --width-field-sm: var(--width-200);
+  --width-field-md: var(--width-300);
+}
+```
+
+**생성되는 유틸리티**:
+
+- `w-field-sm` → `width: var(--width-field-sm)`
+- `h-field-md` → `height: var(--width-field-md)`
+
+## 스토리북 구조
+
+각 컴포넌트는 다음과 같은 스토리 구조로 구성됩니다:
+
+### 개별 Variant/Size 스토리
+
+각 variant와 size를 개별적으로 확인할 수 있습니다.
+
+**예시**: Button의 Primary, Secondary, Small, Medium, Large
+
+### 특수 상태 스토리
+
+컴포넌트의 특수한 상태를 확인할 수 있습니다.
+
+**예시**: Disabled, WithError, FullWidth
+
+### 비교 스토리
+
+여러 variant/size를 한 번에 비교할 수 있습니다.
+
+**예시**: AllVariants, AllSizes
+
+### 실제 사용 예제
+
+실제 사용 시나리오를 보여주는 스토리입니다.
+
+**예시**: DashboardExample, FormDialog, ConfirmationDialog
+
+## 다크 모드
+
+모든 컴포넌트는 자동으로 다크 모드를 지원합니다. Storybook 툴바의 🌙 아이콘으로 테마를 전환하세요.
+
+### 다크 모드 동작 원리
+
+```css
+/* primitive.css */
+@layer base {
+  :root {
+    /* 라이트 모드 (기본값) */
+    --raw-background: var(--color-white);
+    --raw-foreground: var(--color-black-a87);
+    --raw-border: var(--color-black-a12);
+  }
+
+  .dark {
+    /* 다크 모드 */
+    --raw-background: var(--color-gray-800);
+    --raw-foreground: var(--color-white);
+    --raw-border: var(--color-gray-600);
+
+    /* Intent 색상도 다크모드에서 재정의 (더 밝은 색) */
+    --color-primary: var(--color-blue-400);
+    --color-destructive: var(--color-red-500);
+    --color-success: var(--color-green-500);
+  }
+}
+
+/* semantic.css - 자동 대응 */
+@theme inline {
+  --color-background: var(--raw-background);
+  --color-foreground: var(--raw-foreground);
+  --color-border: var(--raw-border);
+
+  /* Intent 색상 기본값 (라이트 모드) */
+  --color-primary: var(--color-blue-500);
+  --color-destructive: var(--color-red-600);
+}
+```
+
+**동작 방식**:
+
+1. 기본값은 `:root`의 값 사용 (라이트 모드)
+2. `<body class="dark">`가 되면 `.dark` 선택자의 값으로 자동 변경
+3. Intent 색상도 다크모드에서 더 밝은 색으로 재정의되어 가독성 향상
+
+## 사용 예제
+
+### 기본 사용법 - 유틸리티 클래스
+
+```tsx
+import { Button } from '@/components/inputs/button';
+import { Alert } from '@/components/feedback/alert';
+
+function App() {
+  return (
+    <div className="p-xl gap-lg">
+      <Alert variant="info" title="환영합니다">
+        디자인 시스템에 오신 것을 환영합니다.
+      </Alert>
+      <Button variant="primary" size="md">
+        시작하기
+      </Button>
+    </div>
+  );
+}
+```
+
+### 폼 예제 - Field Width 활용
+
+```tsx
+import { Input } from '@/components/inputs/input';
+import { Label } from '@/components/inputs/label';
+import { Button } from '@/components/inputs/button';
+
+function LoginForm() {
+  return (
+    <form className="gap-xl flex flex-col">
+      <div className="gap-md flex flex-col">
+        <Label htmlFor="email">Email</Label>
+        <Input
+          id="email"
+          type="email"
+          placeholder="name@example.com"
+          className="field-width-md"
+        />
+      </div>
+      <div className="gap-md flex flex-col">
+        <Label htmlFor="password">Password</Label>
+        <Input id="password" type="password" className="field-width-md" />
+      </div>
+      <Button type="submit" variant="primary" className="w-full">
+        로그인
+      </Button>
+    </form>
+  );
+}
+```
+
+### StatCard 대시보드 - Grid 레이아웃
+
+```tsx
+import { StatCard } from '@/components/data-display/stat-card';
+
+function Dashboard() {
+  return (
+    <div className="gap-xl p-2xl grid grid-cols-2 md:grid-cols-4">
+      <StatCard variant="primary" label="Total Revenue" value="$142,580" />
+      <StatCard variant="success" label="Active Users" value="8,234" />
+      <StatCard variant="warning" label="Processing" value="45" />
+      <StatCard variant="neutral" label="Page Views" value="234.5K" />
+    </div>
+  );
+}
+```
+
+### Dialog 확인 패턴
+
+```tsx
+import {
+  Dialog,
+  DialogTrigger,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+  DialogDescription,
+  DialogFooter,
+  DialogClose,
+} from '@/components/feedback/dialog';
+import { Button } from '@/components/inputs/button';
+
+function DeleteConfirmation() {
+  return (
+    <Dialog>
+      <DialogTrigger asChild>
+        <Button variant="destructive">Delete Item</Button>
+      </DialogTrigger>
+      <DialogContent>
+        <DialogHeader>
+          <DialogTitle>Are you absolutely sure?</DialogTitle>
+          <DialogDescription>This action cannot be undone.</DialogDescription>
+        </DialogHeader>
+        <DialogFooter className="gap-md">
+          <DialogClose asChild>
+            <Button variant="outline">Cancel</Button>
+          </DialogClose>
+          <Button variant="destructive">Delete</Button>
+        </DialogFooter>
+      </DialogContent>
+    </Dialog>
+  );
+}
+```
+
+### 두 가지 토큰 사용 방법
+
+**방법 1: Tailwind 유틸리티 클래스 (권장)**
+
+`@theme`에 정의된 모든 토큰은 자동으로 유틸리티 클래스로 변환됩니다:
+
+```tsx
+{
+  /* bg-primary, text-white, p-xl 등 Tailwind 클래스로 바로 사용 */
+}
+<div className="bg-primary p-xl rounded-base text-white">
+  Custom Styled Box
+</div>;
+```
+
+**방법 2: CSS 변수 직접 사용**
+
+스타일 속성에서 토큰을 직접 참조할 수도 있습니다:
+
+```tsx
+<div
+  style={{
+    backgroundColor: 'var(--color-primary)',
+    padding: 'var(--spacing-xl)',
+    borderRadius: 'var(--radius-base)',
+    color: 'var(--color-primary-foreground)',
+  }}
+>
+  Custom Styled Box
+</div>
+```
+
+**어떤 방법을 선택할까?**
+
+- **Tailwind 클래스**: 간결하고 타입 안전, IntelliSense 지원 (추천)
+- **CSS 변수**: 동적 스타일, 계산된 값 필요 시
+
+## 스토리북 탐색 팁
+
+### 왼쪽 사이드바
+
+컴포넌트 카테고리별로 구성되어 있습니다:
+
+- **Inputs**: Button, Input, Textarea, Label, NativeSelect, Form
+- **Data Display**: Badge, Table, StatCard
+- **Surfaces**: Card, Header
+- **Feedback**: Alert, Dialog
+- **Navigation**: Tabs
+
+### Controls 탭
+
+스토리의 props를 실시간으로 조작하여 테스트할 수 있습니다.
+
+- variant, size, disabled 등 props 변경 가능
+- 토큰 기반이므로 일관된 동작 보장
+
+### Docs 탭
+
+각 컴포넌트의 자동 생성된 문서를 확인할 수 있습니다.
+
+- Props 테이블 (타입, 기본값, 설명)
+- 사용 예제
+- Variant 미리보기
+
+### 테마 전환
+
+툴바의 🌙 아이콘으로 라이트/다크 모드를 전환할 수 있습니다.
+
+- 모든 컴포넌트가 자동으로 테마 전환됨
+- `--raw-*` 토큰 기반 동적 스타일 변경
+
+## 토큰 확장 가이드
+
+새로운 컴포넌트나 스타일이 필요한 경우:
+
+1. **Primitive 추가** (`primitive.css`): 새로운 실제 값 필요 시
+2. **Semantic 추가** (`semantic.css`): 의미론적 매핑 필요 시
+3. **Component 추가** (`components.css`): 컴포넌트 전용 토큰/유틸리티
+
+**예시 - 새 색상 추가**:
+
+```css
+/* 1. primitive.css */
+@theme {
+  --color-purple-500: #9c27b0;
+}
+
+/* 2. semantic.css */
+@theme inline {
+  --color-accent: var(--color-purple-500);
+}
+
+/* 3. components.css */
+@theme inline {
+  --color-btn-accent-bg: var(--color-accent);
+}
+
+@utility btn-accent {
+  background-color: var(--color-btn-accent-bg);
+  color: var(--color-white);
+}
+```
+
+---

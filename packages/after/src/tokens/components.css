@@ -1133,13 +1133,6 @@
   color: var(--color-stat-neutral-text);
 }
 
-/* StatCard Group (Grid Layout) */
-@utility stat-card-group {
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(130px, 1fr));
-  gap: var(--spacing-lg);
-}
-
 /* ========================================
    TABS UTILITIES
    ======================================== */
@@ -1221,8 +1214,9 @@
 
 /* Header Logo */
 @utility header-logo {
-  width: var(--size-header-logo);
-  height: var(--size-header-logo);
+  min-width: var(--size-header-logo);
+  min-height: var(--size-header-logo);
+  padding: var(--spacing-sm);
   background-color: var(--color-header-logo-bg);
   border-radius: var(--radius-header-logo);
   display: flex;
@@ -1231,6 +1225,7 @@
   color: var(--color-header-logo-text);
   font-weight: var(--font-bold);
   font-size: var(--text-xl);
+  flex-shrink: 0;
 }
 
 /* Header Avatar */
