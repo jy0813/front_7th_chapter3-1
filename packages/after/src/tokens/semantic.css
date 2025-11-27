@@ -168,9 +168,13 @@
      ---------------------------------------- */
   --width-icon-sm: var(--width-16);
   --width-icon-md: var(--width-32);
-  --width-input-sm: var(--width-200);
-  --width-input-md: var(--width-300);
-  --width-input-lg: var(--width-400);
+
+  /* Form Field Width - Input, Select, Textarea 공통 */
+  --width-field-sm: var(--width-200);
+  --width-field-md: var(--width-300);
+  --width-field-lg: var(--width-400);
+
+  /* Modal Width */
   --width-modal-sm: var(--width-400);
   --width-modal-md: var(--width-600);
   --width-modal-lg: var(--width-900);
@@ -186,7 +190,8 @@
   --z-base: var(--z-0);
   --z-dropdown: var(--z-10);
   --z-sticky: var(--z-100);
-  --z-modal: var(--z-1000);
+  --z-fixed: var(--z-1000);
+  --z-modal: var(--z-9999);
 
   --duration-fast: var(--duration-150);
   --duration-normal: var(--duration-200);
