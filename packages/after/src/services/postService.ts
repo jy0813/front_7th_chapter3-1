@@ -3,7 +3,7 @@ export interface Post {
   title: string;
   content: string;
   author: string;
-  category: string;
+  category: 'development' | 'design' | 'accessibility';
   status: 'draft' | 'published' | 'archived';
   views: number;
   createdAt: string;

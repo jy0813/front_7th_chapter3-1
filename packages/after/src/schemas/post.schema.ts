@@ -13,6 +13,7 @@ export const postCreateSchema = z.object({
     .string()
     .min(5, '제목은 최소 5글자 이상이어야 합니다')
     .max(100, '제목은 최대 100글자까지 가능합니다'),
+  content: z.string().default(''),
   author: z
     .string()
     .min(2, '작성자명은 최소 2글자 이상이어야 합니다')

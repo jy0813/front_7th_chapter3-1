@@ -20,7 +20,6 @@ export const userCreateSchema = z.object({
   }),
   role: z.enum(['admin', 'moderator', 'user']).default('user'),
   status: z.enum(['active', 'inactive', 'suspended']).default('active'),
-  lastLogin: z.string().optional(),
 });
 
 /**

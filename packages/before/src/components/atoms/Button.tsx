@@ -52,7 +52,7 @@ export const Button: React.FC<ButtonProps> = ({
     // 자동 label 생성
     if (!children) {
       if (action === 'create') {
-        actualChildren = `새 ${entityType === 'user' ? '사용자' : '게시글'} 만들기`;
+        actualChildren = `새 ${entityType === 'post' ? '게시글' : '사용자'} 만들기`;
       } else if (action === 'edit') {
         actualChildren = '수정';
       } else if (action === 'delete') {
