@@ -69,9 +69,4 @@ function NativeSelectOptGroup({
   );
 }
 
-export {
-  NativeSelect,
-  NativeSelectOptGroup,
-  NativeSelectOption,
-  nativeSelectVariants,
-};
+export { NativeSelect, NativeSelectOptGroup, NativeSelectOption };

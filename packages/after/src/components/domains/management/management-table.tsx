@@ -110,7 +110,10 @@ export function ManagementTable({
     }
   };
 
-  const renderCellContent = (item: Entity, columnKey: string): React.ReactNode => {
+  const renderCellContent = (
+    item: Entity,
+    columnKey: string,
+  ): React.ReactNode => {
     const value = (item as unknown as Record<string, unknown>)[columnKey];
 
     if (columnKey === 'status') {

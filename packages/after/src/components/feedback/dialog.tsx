@@ -91,7 +91,7 @@ function DialogContent({
               'modal-close hover:modal-close-hover typo-modal-close focus-ring focus-visible:focus-ring-visible absolute top-4 right-4 opacity-70 transition-opacity hover:opacity-100',
             )}
           >
-            <XIcon className="size-4" />
+            <XIcon className="size-5" />
             <span className="sr-only">Close</span>
           </DialogPrimitive.Close>
         )}
@@ -171,5 +171,4 @@ export {
   DialogTitle,
   DialogTrigger,
   DialogBody,
-  dialogContentVariants,
 };

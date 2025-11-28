@@ -1,4 +1,4 @@
-export { Badge, badgeVariants } from '@/components/data-display/badge';
+export { Badge } from '@/components/data-display/badge';
 export {
   Table,
   TableHeader,

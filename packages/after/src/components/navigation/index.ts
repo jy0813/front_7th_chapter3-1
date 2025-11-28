@@ -1,1 +1,6 @@
-export { Tabs, TabsList, TabsTrigger, TabsContent } from '@/components/navigation/tabs';
+export {
+  Tabs,
+  TabsList,
+  TabsTrigger,
+  TabsContent,
+} from '@/components/navigation/tabs';

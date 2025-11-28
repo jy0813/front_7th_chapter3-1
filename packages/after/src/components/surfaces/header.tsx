@@ -1,25 +1,24 @@
-import * as React from "react"
-import { cn } from "@/lib/utils"
-import { Moon, Sun } from "lucide-react"
-import { useTheme } from "@/providers/theme-provider"
-import { Button } from "@/components/inputs/button"
+import * as React from 'react';
+import { cn } from '@/lib/utils';
+import { Moon, Sun } from 'lucide-react';
+import { useTheme } from '@/contexts/theme-context';
+import { Button } from '@/components/inputs/button';
 
-export interface HeaderProps extends React.HTMLAttributes<HTMLElement> {}
+export type HeaderProps = React.HTMLAttributes<HTMLElement>;
 
 function Header({ className, children, ...props }: HeaderProps) {
   return (
     <header
       data-slot="header"
-      className={cn("header-base", className)}
+      className={cn('header-base', className)}
       {...props}
     >
       {children}
     </header>
-  )
+  );
 }
 
-export interface HeaderContainerProps
-  extends React.HTMLAttributes<HTMLDivElement> {}
+export type HeaderContainerProps = React.HTMLAttributes<HTMLDivElement>;
 
 function HeaderContainer({
   className,
@@ -29,49 +28,43 @@ function HeaderContainer({
   return (
     <div
       data-slot="header-container"
-      className={cn("header-container", className)}
+      className={cn('header-container', className)}
       {...props}
     >
       {children}
     </div>
-  )
+  );
 }
 
-export interface HeaderSectionProps
-  extends React.HTMLAttributes<HTMLDivElement> {}
+export type HeaderSectionProps = React.HTMLAttributes<HTMLDivElement>;
 
-function HeaderSection({
-  className,
-  children,
-  ...props
-}: HeaderSectionProps) {
+function HeaderSection({ className, children, ...props }: HeaderSectionProps) {
   return (
     <div
       data-slot="header-section"
-      className={cn("header-section", className)}
+      className={cn('header-section', className)}
       {...props}
     >
       {children}
     </div>
-  )
+  );
 }
 
-export interface HeaderLogoProps extends React.HTMLAttributes<HTMLDivElement> {}
+export type HeaderLogoProps = React.HTMLAttributes<HTMLDivElement>;
 
 function HeaderLogo({ className, children, ...props }: HeaderLogoProps) {
   return (
     <div
       data-slot="header-logo"
-      className={cn("header-logo", className)}
+      className={cn('header-logo', className)}
       {...props}
     >
       {children}
     </div>
-  )
+  );
 }
 
-export interface HeaderTitleGroupProps
-  extends React.HTMLAttributes<HTMLDivElement> {}
+export type HeaderTitleGroupProps = React.HTMLAttributes<HTMLDivElement>;
 
 function HeaderTitleGroup({
   className,
@@ -82,26 +75,24 @@ function HeaderTitleGroup({
     <div data-slot="header-title-group" className={className} {...props}>
       {children}
     </div>
-  )
+  );
 }
 
-export interface HeaderTitleProps
-  extends React.HTMLAttributes<HTMLHeadingElement> {}
+export type HeaderTitleProps = React.HTMLAttributes<HTMLHeadingElement>;
 
 function HeaderTitle({ className, children, ...props }: HeaderTitleProps) {
   return (
     <h1
       data-slot="header-title"
-      className={cn("typo-header-title", className)}
+      className={cn('typo-header-title', className)}
       {...props}
     >
       {children}
     </h1>
-  )
+  );
 }
 
-export interface HeaderSubtitleProps
-  extends React.HTMLAttributes<HTMLParagraphElement> {}
+export type HeaderSubtitleProps = React.HTMLAttributes<HTMLParagraphElement>;
 
 function HeaderSubtitle({
   className,
@@ -111,16 +102,15 @@ function HeaderSubtitle({
   return (
     <p
       data-slot="header-subtitle"
-      className={cn("typo-header-subtitle", className)}
+      className={cn('typo-header-subtitle', className)}
       {...props}
     >
       {children}
     </p>
-  )
+  );
 }
 
-export interface HeaderUserSectionProps
-  extends React.HTMLAttributes<HTMLDivElement> {}
+export type HeaderUserSectionProps = React.HTMLAttributes<HTMLDivElement>;
 
 function HeaderUserSection({
   className,
@@ -130,16 +120,15 @@ function HeaderUserSection({
   return (
     <div
       data-slot="header-user-section"
-      className={cn("header-user-section", className)}
+      className={cn('header-user-section', className)}
       {...props}
     >
       {children}
     </div>
-  )
+  );
 }
 
-export interface HeaderUserInfoProps
-  extends React.HTMLAttributes<HTMLDivElement> {}
+export type HeaderUserInfoProps = React.HTMLAttributes<HTMLDivElement>;
 
 function HeaderUserInfo({
   className,
@@ -149,16 +138,15 @@ function HeaderUserInfo({
   return (
     <div
       data-slot="header-user-info"
-      className={cn("header-user-info", className)}
+      className={cn('header-user-info', className)}
       {...props}
     >
       {children}
     </div>
-  )
+  );
 }
 
-export interface HeaderUserNameProps
-  extends React.HTMLAttributes<HTMLDivElement> {}
+export type HeaderUserNameProps = React.HTMLAttributes<HTMLDivElement>;
 
 function HeaderUserName({
   className,
@@ -168,16 +156,15 @@ function HeaderUserName({
   return (
     <div
       data-slot="header-user-name"
-      className={cn("typo-header-user-name", className)}
+      className={cn('typo-header-user-name', className)}
       {...props}
     >
       {children}
     </div>
-  )
+  );
 }
 
-export interface HeaderUserEmailProps
-  extends React.HTMLAttributes<HTMLDivElement> {}
+export type HeaderUserEmailProps = React.HTMLAttributes<HTMLDivElement>;
 
 function HeaderUserEmail({
   className,
@@ -187,37 +174,35 @@ function HeaderUserEmail({
   return (
     <div
       data-slot="header-user-email"
-      className={cn("typo-header-user-email", className)}
+      className={cn('typo-header-user-email', className)}
       {...props}
     >
       {children}
     </div>
-  )
+  );
 }
 
-export interface HeaderAvatarProps
-  extends React.HTMLAttributes<HTMLDivElement> {}
+export type HeaderAvatarProps = React.HTMLAttributes<HTMLDivElement>;
 
 function HeaderAvatar({ className, children, ...props }: HeaderAvatarProps) {
   return (
     <div
       data-slot="header-avatar"
-      className={cn("header-avatar", className)}
+      className={cn('header-avatar', className)}
       {...props}
     >
       {children}
     </div>
-  )
+  );
 }
 
-export interface HeaderThemeToggleProps
-  extends Omit<React.ComponentProps<typeof Button>, "children"> {}
+export type HeaderThemeToggleProps = Omit<
+  React.ComponentProps<typeof Button>,
+  'children'
+>;
 
-function HeaderThemeToggle({
-  className,
-  ...props
-}: HeaderThemeToggleProps) {
-  const { theme, toggleTheme } = useTheme()
+function HeaderThemeToggle({ className, ...props }: HeaderThemeToggleProps) {
+  const { theme, toggleTheme } = useTheme();
 
   return (
     <Button
@@ -229,13 +214,13 @@ function HeaderThemeToggle({
       className={className}
       {...props}
     >
-      {theme === "light" ? (
+      {theme === 'light' ? (
         <Moon className="size-5" />
       ) : (
         <Sun className="size-5" />
       )}
     </Button>
-  )
+  );
 }
 
 export {
@@ -252,4 +237,4 @@ export {
   HeaderUserEmail,
   HeaderAvatar,
   HeaderThemeToggle,
-}
+};
