@@ -20,4 +20,5 @@ export {
   HeaderUserEmail,
   HeaderAvatar,
   HeaderThemeToggle,
+  AppHeader,
 } from '@/components/surfaces/header';

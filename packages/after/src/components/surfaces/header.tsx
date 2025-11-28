@@ -223,7 +223,65 @@ function HeaderThemeToggle({ className, ...props }: HeaderThemeToggleProps) {
   );
 }
 
+/* ============================================
+   PRESET COMPONENT
+   일반적인 사용 케이스를 위한 조합 컴포넌트
+   ============================================ */
+
+export interface AppHeaderUser {
+  name: string;
+  email: string;
+  avatar?: string;
+}
+
+export interface AppHeaderProps extends React.HTMLAttributes<HTMLElement> {
+  logo?: React.ReactNode;
+  title: string;
+  subtitle?: string;
+  user?: AppHeaderUser;
+  showThemeToggle?: boolean;
+}
+
+function AppHeader({
+  logo,
+  title,
+  subtitle,
+  user,
+  showThemeToggle = true,
+  className,
+  ...props
+}: AppHeaderProps) {
+  return (
+    <Header className={className} {...props}>
+      <HeaderContainer>
+        <HeaderSection>
+          {logo && <HeaderLogo>{logo}</HeaderLogo>}
+          <HeaderTitleGroup>
+            <HeaderTitle>{title}</HeaderTitle>
+            {subtitle && <HeaderSubtitle>{subtitle}</HeaderSubtitle>}
+          </HeaderTitleGroup>
+        </HeaderSection>
+        {(user || showThemeToggle) && (
+          <HeaderUserSection>
+            {showThemeToggle && <HeaderThemeToggle />}
+            {user && (
+              <>
+                <HeaderUserInfo>
+                  <HeaderUserName>{user.name}</HeaderUserName>
+                  <HeaderUserEmail>{user.email}</HeaderUserEmail>
+                </HeaderUserInfo>
+                {user.avatar && <HeaderAvatar>{user.avatar}</HeaderAvatar>}
+              </>
+            )}
+          </HeaderUserSection>
+        )}
+      </HeaderContainer>
+    </Header>
+  );
+}
+
 export {
+  AppHeader,
   Header,
   HeaderContainer,
   HeaderSection,

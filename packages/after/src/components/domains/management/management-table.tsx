@@ -178,6 +178,9 @@ export function ManagementTable({
 
     if (columnKey === 'actions') {
       if (entityType === 'user') {
+        const user = item as User;
+        const isAdmin = user.role === 'admin';
+
         return (
           <div className="flex gap-8">
             <Button variant="primary" size="sm" onClick={() => onEdit(item)}>
@@ -187,6 +190,8 @@ export function ManagementTable({
               variant="destructive"
               size="sm"
               onClick={() => onDelete(item.id)}
+              disabled={isAdmin}
+              title={isAdmin ? '관리자는 삭제할 수 없습니다' : undefined}
             >
               삭제
             </Button>
