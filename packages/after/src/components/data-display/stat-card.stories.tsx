@@ -98,13 +98,13 @@ export const DashboardExample: Story = {
   render: () => (
     <div className="flex flex-col gap-6" style={{ width: '100%' }}>
       <h2 className="typo-heading-lg">Dashboard Overview</h2>
-      <div className="grid grid-cols-2 md:grid-cols-4 gap-6">
+      <div className="grid grid-cols-2 gap-6 md:grid-cols-4">
         <StatCard variant="primary" label="Total Revenue" value="$142,580" />
         <StatCard variant="success" label="Active Users" value="8,234" />
         <StatCard variant="warning" label="Processing" value="45" />
         <StatCard variant="neutral" label="Page Views" value="234.5K" />
       </div>
-      <div className="grid grid-cols-2 md:grid-cols-4 gap-6">
+      <div className="grid grid-cols-2 gap-6 md:grid-cols-4">
         <StatCard variant="success" label="Conversion Rate" value="3.24%" />
         <StatCard variant="primary" label="Avg. Order Value" value="$67.45" />
         <StatCard variant="neutral" label="Sessions" value="12,456" />

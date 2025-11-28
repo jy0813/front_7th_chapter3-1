@@ -78,27 +78,30 @@ export const WithoutIcon: Story = {
   },
 };
 
-export const Dismissible: Story = {
-  render: (args) => {
-    const [isOpen, setIsOpen] = useState(true);
+// Hook을 사용하는 컴포넌트로 추출
+const DismissibleAlertExample = (args: React.ComponentProps<typeof Alert>) => {
+  const [isOpen, setIsOpen] = useState(true);
 
-    if (!isOpen) {
-      return (
-        <button
-          className="padding-btn-sm typo-btn-sm btn-secondary rounded-btn cursor-pointer border"
-          onClick={() => setIsOpen(true)}
-        >
-          Show Alert
-        </button>
-      );
-    }
-
+  if (!isOpen) {
     return (
-      <Alert {...args} onClose={() => setIsOpen(false)}>
-        You can dismiss this alert by clicking the close button.
-      </Alert>
+      <button
+        className="padding-btn-sm typo-btn-sm btn-secondary rounded-btn cursor-pointer border"
+        onClick={() => setIsOpen(true)}
+      >
+        Show Alert
+      </button>
     );
-  },
+  }
+
+  return (
+    <Alert {...args} onClose={() => setIsOpen(false)}>
+      You can dismiss this alert by clicking the close button.
+    </Alert>
+  );
+};
+
+export const Dismissible: Story = {
+  render: (args) => <DismissibleAlertExample {...args} />,
   args: {
     variant: 'info',
     title: 'Dismissible Alert',

@@ -7,7 +7,6 @@ import {
   TableHeader,
   TableRow,
   TableCaption,
-  TableFooter,
 } from './table';
 import { Badge } from './badge';
 

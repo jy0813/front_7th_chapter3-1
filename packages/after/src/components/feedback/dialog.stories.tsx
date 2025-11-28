@@ -194,4 +194,3 @@ export const ConfirmationDialog: Story = {
     </Dialog>
   ),
 };
-
