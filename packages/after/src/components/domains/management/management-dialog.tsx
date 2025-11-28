@@ -71,7 +71,7 @@ export function ManagementDialog({
   const entityLabel = entityType === 'user' ? '사용자' : '게시글';
 
   // Form validation state
-  const { isValid, isSubmitting } = form.formState;
+  const { isSubmitting } = form.formState;
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
@@ -299,7 +299,7 @@ export function ManagementDialog({
                   variant="primary"
                   size="md"
                   type="submit"
-                  disabled={!isValid || isSubmitting}
+                  disabled={isSubmitting}
                 >
                   {isEditMode ? '수정 완료' : '생성'}
                 </Button>

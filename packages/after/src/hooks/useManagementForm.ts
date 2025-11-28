@@ -1,4 +1,5 @@
 import { useForm } from 'react-hook-form';
+import { useEffect } from 'react';
 import type { UseFormReturn, Resolver } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { userCreateSchema } from '../schemas/user.schema';
@@ -71,7 +72,7 @@ export function useManagementForm({
 
   const form = useForm<FormData>({
     resolver,
-    mode: 'onBlur',
+    mode: 'onChange',
     defaultValues: {
       // user fields - 항상 초기값 설정 (undefined 방지)
       username: '',
@@ -102,6 +103,20 @@ export function useManagementForm({
       status: entityType === 'user' ? 'active' : 'draft',
     });
   };
+
+  // entityType 변경 시 form reset
+  useEffect(() => {
+    form.reset({
+      username: '',
+      email: '',
+      role: 'user',
+      title: '',
+      author: '',
+      category: undefined,
+      content: '',
+      status: entityType === 'user' ? 'active' : 'draft',
+    });
+  }, [entityType, form]);
 
   const loadFormData = (item: Entity) => {
     if (entityType === 'user' && isUser(item)) {
